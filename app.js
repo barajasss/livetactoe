@@ -15,6 +15,9 @@ app.get('/', (req, res) => {
 
 io.on('connection', socket => {
 	socket.on('join_game', playerController.createPlayer(io, socket))
+	socket.on('play_turn', playerController.playTurn(io, socket))
+	socket.on('game_won', playerController.gameWon(io, socket))
+	socket.on('game_draw', playerController.gameDraw(io, socket))
 })
 
 http.listen(3000, () =>

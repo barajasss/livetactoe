@@ -2,26 +2,37 @@ const socket = io()
 const statusDisplay = $('.status')
 let playerCreated = false
 const randomPlayerName = generateRandomName()
-const player = {
-	name: randomPlayerName,
+const promptName = prompt('Enter your name')
+const mainPlayer = {
+	socketId: '',
+	name: promptName,
 	roomId: '',
+	symbol: '',
 }
+const nameDisplay = $('.name')
+let grids,
+	mainPlayerTurn = false,
+	gameOver = false
 
 // SOCKET EMITTERS
 
-socket.emit('join_game', player)
+socket.emit('join_game', mainPlayer)
 
 // SOCKET LISTENERS
 
-socket.on('player_registered', ({ roomId }) => {
-	player.roomId = roomId
+socket.on('player_registered', ({ roomId, socketId, symbol }) => {
+	mainPlayer.socketId = socketId
+	mainPlayer.roomId = roomId
+	mainPlayer.symbol = symbol
+	nameDisplay.innerHTML = mainPlayer.name
+	console.log('player_registered', mainPlayer)
 })
+
 socket.on('game_started', player => {
 	if (!playerCreated) {
 		statusDisplay.textContent = 'Game started'
-		console.log('player created')
 		playerCreated = true
-		const grids = generateGrid()
+		grids = generateGrid()
 
 		// attach all the event listeners...
 
@@ -29,11 +40,48 @@ socket.on('game_started', player => {
 			grid.addEventListener('click', gridEventListener(i))
 		})
 
-		function gridEventListener(i) {
+		function gridEventListener(gridIndex) {
 			return function () {
-				console.log(grids, grids[i], i)
-				grids[i].textContent = 'x'
+				if (
+					mainPlayerTurn &&
+					grids[gridIndex].textContent === '' &&
+					!gameOver
+				) {
+					grids[gridIndex].textContent = mainPlayer.symbol
+					socket.emit('play_turn', mainPlayer, gridIndex)
+					mainPlayerTurn = false
+					const gameWon = checkGameWin(grids, mainPlayer.symbol)
+					const gameDraw = checkGameDraw(grids)
+					if (gameWon) {
+						socket.emit('game_won', mainPlayer)
+					}
+					if (gameDraw) {
+						socket.emit('game_draw')
+					}
+				}
 			}
 		}
 	}
+})
+
+socket.on('turn', playerTurn => {
+	// it will receive the player with that given turn...
+	if (playerTurn.socketId === mainPlayer.socketId && playerTurn.turn) {
+		mainPlayerTurn = true
+		statusDisplay.innerHTML = 'Your turn...'
+	} else {
+		mainPlayerTurn = false
+		statusDisplay.innerHTML = `Waiting for ${playerTurn.name}'s turn...`
+	}
+})
+
+socket.on('turn_played', (playerTurn, gridIndex) => {
+	// will run when someone plays their turn
+	console.log('turn_played')
+	grids[gridIndex].innerHTML = playerTurn.symbol
+})
+
+socket.on('game_over', result => {
+	statusDisplay.textContent = `Game Over. ${result.message}`
+	gameOver = true
 })
