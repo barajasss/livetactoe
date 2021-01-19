@@ -12,6 +12,7 @@ exports.createPlayer = (io, socket) => player => {
 	})
 
 	socket.emit('player_joined')
+
 	io.to(roomId).emit('player_joined', players)
 
 	if (players.length === 2) {
