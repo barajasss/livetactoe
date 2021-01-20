@@ -18,6 +18,7 @@ io.on('connection', socket => {
 	socket.on('play_turn', playerController.playTurn(io, socket))
 	socket.on('game_won', playerController.gameWon(io, socket))
 	socket.on('game_draw', playerController.gameDraw(io, socket))
+	socket.on('disconnect', playerController.disconnect(io, socket))
 })
 
 http.listen(3000, () =>

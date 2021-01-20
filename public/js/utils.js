@@ -30,9 +30,9 @@ function generateGrid() {
 }
 
 function checkGameDraw(grids) {
-	const totalMarked = Array.from(grids).filter(
-		grid => grid.textContent !== ''
-	).length
+	const totalMarked = Array.from(grids).filter(grid => grid.textContent)
+		.length
+	console.log(grids.length, totalMarked)
 	if (grids.length === totalMarked) {
 		return true
 	}
@@ -41,7 +41,7 @@ function checkGameDraw(grids) {
 
 function checkGameWin(grids, symbol) {
 	// check horizontally
-	for (let i = 0; i < 3; i++) {
+	for (let i = 0; i < 3; i += 3) {
 		if (
 			grids[i].textContent === symbol &&
 			grids[i + 1].textContent === symbol &&

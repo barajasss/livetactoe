@@ -56,7 +56,7 @@ socket.on('game_started', player => {
 						socket.emit('game_won', mainPlayer)
 					}
 					if (gameDraw) {
-						socket.emit('game_draw')
+						socket.emit('game_draw', mainPlayer)
 					}
 				}
 			}
@@ -84,4 +84,9 @@ socket.on('turn_played', (playerTurn, gridIndex) => {
 socket.on('game_over', result => {
 	statusDisplay.textContent = `Game Over. ${result.message}`
 	gameOver = true
+})
+
+socket.on('player_left', player => {
+	// the player left details
+	console.log('player_left', player)
 })
