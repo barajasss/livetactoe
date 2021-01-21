@@ -28,7 +28,7 @@ socket.on('player_registered', ({ roomId, socketId, symbol }) => {
 	console.log('player_registered', mainPlayer)
 })
 
-socket.on('game_started', player => {
+socket.on('game_started', () => {
 	if (!playerCreated) {
 		statusDisplay.textContent = 'Game started'
 		playerCreated = true

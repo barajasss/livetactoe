@@ -79,6 +79,31 @@ const getRoomById = roomId => {
 	return room
 }
 
+/**
+ * Set random player turn
+ * @param {String} roomId Id of the room to get random player
+ */
+
+exports.setRandomPlayerTurn = roomId => {
+	const room = getRoomById(roomId)
+	const randomIndex = Math.floor(Math.random() * room.players.length)
+	let playerTurn = room.players[randomIndex]
+
+	if (playerTurn) {
+		// clear other player turns to false
+		room.players.forEach(player => (player.turn = false))
+
+		// set the random player turn to true
+		playerTurn.turn = true
+		return playerTurn
+	}
+}
+
+/**
+ * Get Current player's turn
+ * @param {String} roomId Id of the room to get player
+ */
+
 exports.getPlayerTurn = roomId => {
 	const room = getRoomById(roomId)
 	let playerTurn = room.players.find(player => player.turn)

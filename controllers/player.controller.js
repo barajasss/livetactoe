@@ -1,12 +1,13 @@
 const {
-	RoomTypes,
 	addPlayer,
-	getPlayerTurn,
+	setRandomPlayerTurn,
 	setNextPlayerTurn,
 	getPlayerFromSocketId,
 	removeRoom,
 	markSymbol,
 } = require('./room.controller')
+
+const { RoomTypes } = require('../models/rooms')
 
 const { checkGameWin, checkGameDraw } = require('../utils/game')
 
@@ -19,14 +20,26 @@ exports.createPlayer = (io, socket) => (player, roomType = 'TWO_PLAYER') => {
 	const { roomId, players } = addPlayer(roomType, newPlayer)
 	newPlayer = players.find(player => player.socketId === newPlayer.socketId)
 	socket.join(roomId)
+
 	console.log(newPlayer)
+
 	socket.emit('player_registered', newPlayer)
 	io.to(roomId).emit('player_joined', players)
 
-	if (players.length === 2) {
-		io.to(roomId).emit('game_started', player)
-		const playerTurn = getPlayerTurn(roomId)
-		console.log('player turn', playerTurn)
+	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
+		io.to(roomId).emit('game_started')
+		const playerTurn = setRandomPlayerTurn(roomId)
+		// inform all the players on whose turn it is
+		io.to(roomId).emit('turn', playerTurn)
+	} else if (roomType === RoomTypes.THREE_PLAYER && players.length === 3) {
+		io.to(roomId).emit('game_started')
+		const playerTurn = setRandomPlayerTurn(roomId)
+		// inform all the players on whose turn it is
+		io.to(roomId).emit('turn', playerTurn)
+	} else if (roomType === RoomTypes.FOUR_PLAYER && players.length === 4) {
+		io.to(roomId).emit('game_started')
+		const playerTurn = setRandomPlayerTurn(roomId)
+		// inform all the players on whose turn it is
 		io.to(roomId).emit('turn', playerTurn)
 	}
 }
@@ -39,7 +52,7 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 	// mark the symbol on the board...
 	const board = markSymbol(roomId, gridIndex, player.symbol)
 	socket.to(roomId).emit('turn_played', player, gridIndex)
-	console.log(board)
+
 	if (checkGameWin(board, player.symbol)) {
 		return gameWon(io, player)
 	}
