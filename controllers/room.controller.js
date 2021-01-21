@@ -1,23 +1,11 @@
-const RoomTypes = {
-	TWO_PLAYER: 'TWO_PLAYER',
-	THREE_PLAYER: 'THREE_PLAYER',
-	FOUR_PLAYER: 'FOUR_PLAYER',
-}
-let twoPlayerRooms = [
-	// {
-	// 	roomId: 'two-player-room-1',
-	// 	players: [{ socketId: 'jdfaad', name: 'sadfdsa', turn: true/false }, { socketId: 'jdfaad' }],
-	// },
-]
-let threePlayerRooms = []
-let fourPlayerRooms = []
-
-const SYMBOLS = ['X', 'O', 'Y', 'T']
-
-exports.RoomTypes = RoomTypes
-exports.twoPlayerRooms = twoPlayerRooms
-exports.threePlayerRooms = threePlayerRooms
-exports.fourPlayerRooms = fourPlayerRooms
+const { generateRoomData } = require('../utils/room')
+const {
+	SYMBOLS,
+	RoomTypes,
+	twoPlayerRooms,
+	threePlayerRooms,
+	fourPlayerRooms,
+} = require('../models/rooms')
 
 /**
  * Adds a player to a room. Creates a new room if it does not exist.
@@ -31,35 +19,8 @@ exports.addPlayer = (roomType, player) => {
 		...player,
 		turn: false,
 	}
-	let room, newRoomName
 
-	switch (roomType) {
-		case RoomTypes.TWO_PLAYER: {
-			// pair up players
-			// search for a room with one player
-			room = twoPlayerRooms.find(room => room.players.length === 1)
-			newRoomName = `${RoomTypes.TWO_PLAYER}-${twoPlayerRooms.length + 1}`
-			break
-		}
-		case RoomTypes.THREE_PLAYER: {
-			room = threePlayerRooms.find(
-				room => room.players.length >= 1 && room.players.length <= 2
-			)
-			newRoomName = `${RoomTypes.THREE_PLAYER}-${
-				threePlayerRooms.length + 1
-			}`
-			break
-		}
-		case RoomTypes.FOUR_PLAYER: {
-			room = fourPlayerRooms.find(
-				room => room.players.length >= 1 && room.players.length <= 3
-			)
-			newRoomName = `${RoomTypes.FOUR_PLAYER}-${
-				fourPlayerRooms.length + 1
-			}`
-			break
-		}
-	}
+	let { room, newRoomName, board } = generateRoomData(roomType)
 
 	if (room) {
 		// already an empty room is there with a waiting player...
@@ -83,23 +44,29 @@ exports.addPlayer = (roomType, player) => {
 			roomType,
 			roomId: newRoomId,
 			players: [player],
+			board,
 		}
 
 		// append the newly created room to the proper rooms array
 		switch (roomType) {
 			case RoomTypes.TWO_PLAYER: {
-				twoPlayerRooms = [...twoPlayerRooms, newRoom]
+				twoPlayerRooms.push(newRoom)
 			}
 			case RoomTypes.THREE_PLAYER: {
-				threePlayerRooms = [...threePlayerRooms, newRoom]
+				threePlayerRooms.push(newRoom)
 			}
 			case RoomTypes.FOUR_PLAYER: {
-				fourPlayerRooms = [...fourPlayerRooms, newRoom]
+				fourPlayerRooms.push(newRoom)
 			}
 		}
 		return newRoom
 	}
 }
+
+/**
+ * Get the room
+ * @param {String} roomId The id of the room to find
+ */
 
 const getRoomById = roomId => {
 	let room = twoPlayerRooms.find(room => room.roomId === roomId)
@@ -151,17 +118,20 @@ exports.setNextPlayerTurn = roomId => {
 
 exports.removeRoom = roomId => {
 	let room = getRoomById(roomId)
-	const removeFunc = room => room.roomId !== roomId
+	const findRoom = room => room.roomId === roomId
 	if (room) {
-		// remove the room
+		// remove the room by finding its index and mutating it...
 		if (room.roomType === RoomTypes.TWO_PLAYER) {
-			twoPlayerRooms.filter(removeFunc)
+			const index = twoPlayerRooms.findIndex(findRoom)
+			twoPlayerRooms.splice(index, 1)
 			return
 		} else if (room.roomType === RoomTypes.THREE_PLAYER) {
-			threePlayerRooms.filter(removeFunc)
+			const index = threePlayerRooms.findIndex(findRoom)
+			threePlayerRooms.splice(index, 1)
 			return
 		} else if (room.roomType === RoomTypes.FOUR_PLAYER) {
-			fourPlayerRooms.filter(removeFunc)
+			const index = threePlayerRooms.findIndex(findRoom)
+			fourPlayerRooms.splice(index, 1)
 			return
 		}
 	}
@@ -195,4 +165,19 @@ exports.getPlayerFromSocketId = socketId => {
 	}
 	if (player) return player
 	return null
+}
+
+/**
+ *
+ * @param {String} roomId Room to find the board
+ * @param {Number} index Board position to mark
+ * @param {String} symbol The player symbol (X/Y/O/T).
+ */
+
+exports.markSymbol = (roomId, index, symbol) => {
+	const room = getRoomById(roomId)
+	if (index >= 0 && index < room.board.length) {
+		room.board[index] = symbol
+		return room.board
+	}
 }

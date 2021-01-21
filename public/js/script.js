@@ -50,14 +50,6 @@ socket.on('game_started', player => {
 					grids[gridIndex].textContent = mainPlayer.symbol
 					socket.emit('play_turn', mainPlayer, gridIndex)
 					mainPlayerTurn = false
-					const gameWon = checkGameWin(grids, mainPlayer.symbol)
-					const gameDraw = checkGameDraw(grids)
-					if (gameWon) {
-						socket.emit('game_won', mainPlayer)
-					}
-					if (gameDraw) {
-						socket.emit('game_draw', mainPlayer)
-					}
 				}
 			}
 		}
