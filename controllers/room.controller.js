@@ -79,6 +79,8 @@ const getRoomById = roomId => {
 	return room
 }
 
+exports.getRoomById = getRoomById
+
 /**
  * Set random player turn
  * @param {String} roomId Id of the room to get random player

@@ -5,11 +5,50 @@ const {
 	getPlayerFromSocketId,
 	removeRoom,
 	markSymbol,
+	getRoomById,
 } = require('./room.controller')
+
+const { MAX_TIMEOUT } = require('../models/rooms')
 
 const { RoomTypes } = require('../models/rooms')
 
 const { checkGameWin, checkGameDraw } = require('../utils/game')
+
+/**
+ * Starts the game by setting up the timers and also the playerTurn...
+ */
+
+const setRoomTimeout = (io, room) => {
+	const { roomId } = room
+	room.timeout = MAX_TIMEOUT
+	io.to(roomId).emit('timeout', room.timeout)
+
+	clearInterval(room.timeoutId)
+
+	// set a new interval
+	room.timeoutId = setInterval(() => {
+		// this function will run continuously every second
+		if (room.timeout <= 1) {
+			room.timeout = MAX_TIMEOUT
+			playerTurn = setNextPlayerTurn(roomId)
+			io.to(roomId).emit('turn', playerTurn)
+		} else {
+			room.timeout--
+		}
+		io.to(roomId).emit('timeout', room.timeout)
+	}, 1000)
+}
+
+const startGame = (io, room) => {
+	const { roomId } = room
+	io.to(roomId).emit('game_started')
+	let playerTurn = setRandomPlayerTurn(roomId)
+	// inform all the players on whose turn it is
+	io.to(roomId).emit('turn', playerTurn)
+
+	// set up timers
+	setRoomTimeout(io, room)
+}
 
 exports.createPlayer = (io, socket) => (player, roomType = 'TWO_PLAYER') => {
 	// create a player and match with any waiting player.
@@ -17,7 +56,8 @@ exports.createPlayer = (io, socket) => (player, roomType = 'TWO_PLAYER') => {
 		...player,
 		socketId: socket.id,
 	}
-	const { roomId, players } = addPlayer(roomType, newPlayer)
+	const room = addPlayer(roomType, newPlayer)
+	const { roomId, players } = room
 	newPlayer = players.find(player => player.socketId === newPlayer.socketId)
 	socket.join(roomId)
 
@@ -27,20 +67,11 @@ exports.createPlayer = (io, socket) => (player, roomType = 'TWO_PLAYER') => {
 	io.to(roomId).emit('player_joined', players)
 
 	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
-		io.to(roomId).emit('game_started')
-		const playerTurn = setRandomPlayerTurn(roomId)
-		// inform all the players on whose turn it is
-		io.to(roomId).emit('turn', playerTurn)
+		startGame(io, room)
 	} else if (roomType === RoomTypes.THREE_PLAYER && players.length === 3) {
-		io.to(roomId).emit('game_started')
-		const playerTurn = setRandomPlayerTurn(roomId)
-		// inform all the players on whose turn it is
-		io.to(roomId).emit('turn', playerTurn)
+		startGame(io, room)
 	} else if (roomType === RoomTypes.FOUR_PLAYER && players.length === 4) {
-		io.to(roomId).emit('game_started')
-		const playerTurn = setRandomPlayerTurn(roomId)
-		// inform all the players on whose turn it is
-		io.to(roomId).emit('turn', playerTurn)
+		startGame(io, room)
 	}
 }
 
@@ -52,6 +83,10 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 	// mark the symbol on the board...
 	const board = markSymbol(roomId, gridIndex, player.symbol)
 	socket.to(roomId).emit('turn_played', player, gridIndex)
+
+	// reset the timers
+	const room = getRoomById(roomId)
+	setRoomTimeout(io, room)
 
 	if (checkGameWin(board, player.symbol)) {
 		return gameWon(io, player)
@@ -79,6 +114,7 @@ function gameWon(io, player) {
 		},
 		player
 	)
+	clearInterval(getRoomById(player.roomId))
 	removeRoom(player.roomId)
 }
 
@@ -95,6 +131,7 @@ function gameDraw(io, player) {
 		},
 		player
 	)
+	clearInterval(getRoomById(player.roomId))
 	removeRoom(player.roomId)
 }
 

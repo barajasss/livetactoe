@@ -10,6 +10,8 @@ const mainPlayer = {
 	symbol: '',
 }
 const nameDisplay = $('.name')
+const timeDisplay = $('.time')
+
 let grids,
 	mainPlayerTurn = false,
 	gameOver = false
@@ -19,6 +21,10 @@ let grids,
 socket.emit('join_game', mainPlayer)
 
 // SOCKET LISTENERS
+
+socket.on('timeout', time => {
+	timeDisplay.textContent = 'Time: ' + time
+})
 
 socket.on('player_registered', ({ roomId, socketId, symbol }) => {
 	mainPlayer.socketId = socketId
