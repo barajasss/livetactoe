@@ -1,7 +1,12 @@
 const express = require('express')
-const app = express()
 const http = require('http').createServer(app)
-const io = require('socket.io')(http)
+const io = require('socket.io')(http, {
+	cors: {
+		origin: 'https://example.com',
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		credentials: true,
+	},
+})
 
 const playerController = require('./controllers/player.controller')
 
