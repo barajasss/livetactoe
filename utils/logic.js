@@ -1,11 +1,11 @@
-import {
+const {
 	THREE_WIN_PATTERNS,
 	FOUR_WIN_PATTERNS,
 	FIVE_WIN_PATTERNS,
 	THREE_ROBOT_TURNS,
 	FOUR_ROBOT_TURNS,
 	FIVE_ROBOT_TURNS,
-} from '../models/game'
+} = require('../models/game')
 
 // generate random number including min and max
 
