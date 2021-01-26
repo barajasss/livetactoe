@@ -8,6 +8,7 @@ const io = require('socket.io')(http, {
 		credentials: true,
 	},
 })
+const PORT = process.env.PORT || 3000
 
 const playerController = require('./controllers/player.controller')
 
@@ -25,6 +26,6 @@ io.on('connection', socket => {
 	socket.on('disconnect', playerController.disconnect(io, socket))
 })
 
-http.listen(3000, () =>
-	console.log('live-tac-toe app listening at localhost:3000')
+http.listen(PORT, () =>
+	console.log('live-tac-toe app listening at localhost:' + PORT)
 )
