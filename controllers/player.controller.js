@@ -1,6 +1,7 @@
 const {
 	addPlayer,
 	setRandomPlayerTurn,
+	getPlayerTurn,
 	setNextPlayerTurn,
 	getPlayerFromSocketId,
 	removeRoom,
@@ -12,7 +13,24 @@ const { MAX_TIMEOUT } = require('../models/rooms')
 
 const { RoomTypes } = require('../models/rooms')
 
-const { checkGameWin, checkGameDraw } = require('../utils/logic')
+const {
+	checkGameWin,
+	checkGameDraw,
+	getAutoTurnPattern,
+} = require('../utils/logic')
+
+/**
+ * Makes a robot mark the board on behalf of the player.
+ */
+
+function playRobot(io, room) {
+	const { roomId, board } = room
+	let player = getPlayerTurn(roomId)
+	const gridIndex = getAutoTurnPattern(board)
+	markSymbol(roomId, gridIndex, player.symbol)
+	io.to(roomId).emit('turn_played', player, gridIndex)
+	return player
+}
 
 /**
  * Starts the game by setting up the timers and also the playerTurn...
@@ -29,6 +47,15 @@ const setRoomTimeout = (io, room) => {
 	room.timeoutId = setInterval(() => {
 		// this function will run continuously every second
 		if (room.timeout <= 1) {
+			// if the player reaches the last second then robot will make its move...
+			const player = playRobot(io, room)
+			if (checkGameWin(room.board, player.symbol)) {
+				return gameWon(io, player)
+			}
+			if (checkGameDraw(room.board)) {
+				return gameDraw(io, player)
+			}
+
 			room.timeout = MAX_TIMEOUT
 			playerTurn = setNextPlayerTurn(roomId)
 			io.to(roomId).emit('turn', playerTurn)
@@ -50,7 +77,10 @@ const startGame = (io, room) => {
 	setRoomTimeout(io, room)
 }
 
-exports.createPlayer = (io, socket) => (player, roomType = 'TWO_PLAYER') => {
+exports.createPlayer = (io, socket) => (
+	player,
+	roomType = RoomTypes.TWO_PLAYER
+) => {
 	// create a player and match with any waiting player.
 	let newPlayer = {
 		...player,
@@ -107,6 +137,7 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
  */
 
 function gameWon(io, player) {
+	console.log('game won')
 	io.in(player.roomId).emit(
 		'game_over',
 		{
@@ -125,6 +156,7 @@ function gameWon(io, player) {
  * @param {Object} player To send the winning player information.
  */
 function gameDraw(io, player) {
+	console.log('game draw')
 	io.in(player.roomId).emit(
 		'game_over',
 		{

@@ -18,6 +18,7 @@ exports.addPlayer = (roomType, player) => {
 	player = {
 		...player,
 		turn: false,
+		robot: false,
 	}
 
 	let { room, newRoomName, board } = generateRoomData(roomType)

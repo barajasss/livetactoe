@@ -7,7 +7,13 @@ let twoPlayerRooms = [
 	// {
 	//  roomType: 'TWO_PLAYER',
 	// 	roomId: 'two-player-room-1',
-	// 	players: [{ socketId: 'jdfaad', name: 'sadfdsa', turn: true/false }, { socketId: 'jdfaad' }],
+	// 	players: [{
+	// 	socketId: 'jdfaad',
+	// 	name: 'sadfdsa',
+	// 	turn: true/false,
+	// }, {
+	// 	socketId: 'jdfaad'
+	// }],
 	//  board: ['', '', '', '', '', '', '', '', '']
 	//	timeoutId: 328148373,
 	//	timeout: 10 seconds

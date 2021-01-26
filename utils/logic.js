@@ -101,7 +101,7 @@ function isWinner(game_type, win_pattern, board, symbol) {
 }
 
 // Getting most nearest winning and lossing pattern
-function getAutoTurnPattern(board) {
+exports.getAutoTurnPattern = board => {
 	const game_type = getGameType(board)
 	let pattern = []
 	if (game_type === 3) {
@@ -138,7 +138,13 @@ function getAutoTurnPattern(board) {
 			}
 		}
 	}
-	return pattern
+	console.log(pattern)
+	for (var x = 0; x < pattern.length; x++) {
+		const index = getIndexFromPattern(game_type, pattern[x])
+		if (board[index] === '' || !board[index]) {
+			return index
+		}
+	}
 }
 
 // Getting most applicable pattern for any player
