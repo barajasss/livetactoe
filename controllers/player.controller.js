@@ -12,7 +12,7 @@ const { MAX_TIMEOUT } = require('../models/rooms')
 
 const { RoomTypes } = require('../models/rooms')
 
-const { checkGameWin, checkGameDraw } = require('../utils/game')
+const { checkGameWin, checkGameDraw } = require('../utils/logic')
 
 /**
  * Starts the game by setting up the timers and also the playerTurn...
@@ -114,7 +114,8 @@ function gameWon(io, player) {
 		},
 		player
 	)
-	clearInterval(getRoomById(player.roomId))
+	const room = getRoomById(player.roomId)
+	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)
 }
 
@@ -131,7 +132,8 @@ function gameDraw(io, player) {
 		},
 		player
 	)
-	clearInterval(getRoomById(player.roomId))
+	const room = getRoomById(player.roomId)
+	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)
 }
 
