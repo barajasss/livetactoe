@@ -7,7 +7,7 @@ function randomBetween(min, max) {
 // returns the possible combinations that a player can win depending on the game_type (3x3, 4x4, 5x5)
 
 function winnerPatterns(game_type) {
-	var wins = Array()
+	let wins = Array()
 
 	// 3 x 3 winning patterns;
 	if (game_type === 3)
@@ -108,7 +108,7 @@ function winnerPatterns(game_type) {
 
 // Robot patterns, for auto players of every game board
 function DefaultRobotPatterns(game_type) {
-	var robot_turns = Array()
+	let robot_turns = Array()
 
 	// 3 x 3 winning patterns;
 	if (game_type === 3) robot_turns = [22, 11, 33, 13, 21, 23, 12, 32, 31]
@@ -179,24 +179,143 @@ function getGameType(board) {
 	}
 }
 
+/**
+ * Selection array contains all the matrix type of notations marked by the user with that symbol
+ */
+
+function createSelectionArray(board, symbol) {
+	const selectionArray = []
+	const game_type = getGameType(board)
+	for (let i = 0; i < board.length; i++) {
+		if (board[i] === symbol) {
+			const pattern = getPatternFromIndex(game_type, i)
+			selectionArray.push(pattern)
+		}
+	}
+	return selectionArray
+}
+
+function getPatternFromIndex(game_type, index) {
+	// convert to matrix type of index(11, 22, 33) from linear index(0, 1, 2)
+	const row = Math.floor(index / game_type) + 1
+	const col = (index % 3) + 1
+	return `${row}${col}`
+}
+
 function getIndexFromPattern(game_type, matrix) {
 	// convert to linear index(0, 1, 2) from matrix type of index(11, 22, 33)
 	// so 11 = 0, 12 = 1, 22 = 4, 32 = 7
 
 	const row = Number(String(matrix).slice(0, 1)) - 1
 	const col = Number(String(matrix).slice(1, 2)) - 1
-	let multiplier
-	if (game_type === 3) {
-		multiplier = 3
-	} else if (game_type === 4) {
-		multiplier = 4
-	} else if (game_type === 5) {
-		multiplier = 5
-	}
-	return row * multiplier + col
+	return row * game_type + col
 }
 
+// Verifying each selections with winning pattern
+function isWinner(game_type, win_pattern, board, symbol) {
+	let match = 0
+	for (let x = 0; x < win_pattern.length; x++) {
+		let y = getIndexFromPattern(game_type, win_pattern[x])
+		if (board[y] === symbol) {
+			match++
+		}
+	}
+
+	if (match === win_pattern.length) return true
+	return false
+}
+
+// Getting most nearest winning and lossing pattern
+function getAutoTurnPattern(board) {
+	const game_type = getGameType(board)
+	let pattern = []
+	if (game_type === 3) {
+		pattern = getMostNearestPattern(board, 'O')
+		if (pattern.length <= 0) {
+			pattern = getMostNearestPattern(board, 'X')
+			if (pattern.length <= 0) {
+				pattern = DefaultRobotPatterns(game_type)
+			}
+		}
+	} else if (game_type === 4) {
+		pattern = getMostNearestPattern(board, 'O')
+		if (pattern.length <= 0) {
+			pattern = getMostNearestPattern(board, 'X')
+			if (pattern.length <= 0) {
+				pattern = getMostNearestPattern(board, 'Y')
+				if (pattern.length <= 0) {
+					pattern = DefaultRobotPatterns(game_type)
+				}
+			}
+		}
+	} else {
+		pattern = getMostNearestPattern(board, 'O')
+		if (pattern.length <= 0) {
+			pattern = getMostNearestPattern(board, 'X')
+			if (pattern.length <= 0) {
+				pattern = getMostNearestPattern(board, 'Y')
+				if (pattern.length <= 0) {
+					pattern = getMostNearestPattern(board, 'T')
+					if (pattern.length <= 0) {
+						pattern = DefaultRobotPatterns(game_type)
+					}
+				}
+			}
+		}
+	}
+	return pattern
+}
+
+// Getting most applicable pattern for any player
+
+function getMostNearestPattern(board, symbol) {
+	const game_type = getGameType(board)
+
+	let selected = createSelectionArray(board, symbol)
+	let win_patterns = winnerPatterns(game_type)
+
+	finished = false
+	for (let x = 0; x < win_patterns.length; x++) {
+		let intersected = intersectionArray(selected, win_patterns[x])
+
+		if (intersected.length === win_patterns[x].length - 1) {
+			// if any position is found empty then return that pattern; otherwise will check another one from list
+			for (let y = 0; y < win_patterns[x].length; y++) {
+				obj = document.getElementById(win_patterns[x][y])
+				if (obj.value === '' || obj.value === ' ') {
+					// Return pattern if got an empty; otherwise will match others
+					return win_patterns[x]
+				}
+			}
+		}
+	}
+	return []
+}
+
+// Return intersaction result by comparing
+// Players' turns and Winning patterns
+function intersectionArray(x, y) {
+	let response = []
+	for (let i = 0; i < x.length; i++) {
+		for (let z = 0; z < y.length; z++) {
+			if (x[i] === y[z]) {
+				response.push(x[i])
+				break
+			}
+		}
+	}
+	return response
+}
+
+/**
+ *  EXPORTS
+ */
+
 // Check if the player with the symbol(x, o, y, t) won...
+
+exports.getRobotMove = (board, symbol) => {
+	let game_type = getGameType(board)
+}
 
 exports.checkGameWin = (board, symbol) => {
 	let game_type = getGameType(board)
@@ -216,96 +335,4 @@ exports.checkGameDraw = board => {
 		return true
 	}
 	return false
-}
-
-// Verifying each selections with winning pattern
-function isWinner(game_type, win_pattern, board, symbol) {
-	let match = 0
-	for (let x = 0; x < win_pattern.length; x++) {
-		let y = getIndexFromPattern(game_type, win_pattern[x])
-		if (board[y] === symbol) {
-			match++
-		}
-	}
-
-	if (match === win_pattern.length) return true
-	return false
-}
-
-// Getting most nearest winning and lossing pattern
-function getAutoTurnPattern(game_type) {
-	var pattern = []
-	if (game_type === 3) {
-		pattern = getMostNearestPattern('O')
-		if (pattern.length <= 0) {
-			pattern = getMostNearestPattern('X')
-			if (pattern.length <= 0) {
-				pattern = DefaultRobotPatterns(game_type)
-			}
-		}
-	} else if (game_type === 4) {
-		pattern = getMostNearestPattern('O')
-		if (pattern.length <= 0) {
-			pattern = getMostNearestPattern('X')
-			if (pattern.length <= 0) {
-				pattern = getMostNearestPattern('Y')
-				if (pattern.length <= 0) {
-					pattern = DefaultRobotPatterns(game_type)
-				}
-			}
-		}
-	} else {
-		pattern = getMostNearestPattern('O')
-		if (pattern.length <= 0) {
-			pattern = getMostNearestPattern('X')
-			if (pattern.length <= 0) {
-				pattern = getMostNearestPattern('Y')
-				if (pattern.length <= 0) {
-					pattern = getMostNearestPattern('T')
-					if (pattern.length <= 0) {
-						pattern = DefaultRobotPatterns(game_type)
-					}
-				}
-			}
-		}
-	}
-	return pattern
-}
-
-// Getting most applicable pattern for any player
-function getMostNearestPattern(selections, turn) {
-	var selected = selections[turn].sort()
-	var win_patterns = winnerPatterns()
-
-	finished = false
-	for (var x = 0; x < win_patterns.length; x++) {
-		var intersected = intersectionArray(selected, win_patterns[x])
-
-		if (intersected.length === win_patterns[x].length - 1) {
-			// if any position is found empty then return that pattern; otherwise will check another one from list
-			for (var y = 0; y < win_patterns[x].length; y++) {
-				obj = document.getElementById(win_patterns[x][y])
-				if (obj.value === '' || obj.value === ' ') {
-					// Return pattern if got an empty; otherwise will match others
-					return win_patterns[x]
-				}
-			}
-		}
-	}
-	return []
-}
-
-// Return intersaction result by comparing
-// Players' turns and Winning patterns
-function intersectionArray(x, y) {
-	var response = []
-	for (var i = 0; i < x.length; i++) {
-		for (var z = 0; z < y.length; z++) {
-			if (x[i] === y[z]) {
-				response.push(x[i])
-				break
-			}
-		}
-	}
-	return response
 }
