@@ -138,7 +138,6 @@ exports.getAutoTurnPattern = board => {
 			}
 		}
 	}
-	console.log(pattern)
 	for (var x = 0; x < pattern.length; x++) {
 		const index = getIndexFromPattern(game_type, pattern[x])
 		if (board[index] === '' || !board[index]) {

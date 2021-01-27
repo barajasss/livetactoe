@@ -6,6 +6,32 @@ const {
 } = require('../models/rooms')
 
 /**
+ * Get the room
+ * @param {String} roomId The id of the room to find
+ */
+const getRoomById = roomId => {
+	let room
+	let roomType = roomId.split('-')[0]
+	switch (roomType) {
+		case RoomTypes.TWO_PLAYER: {
+			room = twoPlayerRooms.find(room => room.roomId === roomId)
+			break
+		}
+		case RoomTypes.THREE_PLAYER: {
+			room = threePlayerRooms.find(room => room.roomId === roomId)
+			break
+		}
+		case RoomTypes.FOUR_PLAYER: {
+			room = fourPlayerRooms.find(room => room.roomId === roomId)
+			break
+		}
+	}
+	return room
+}
+
+exports.getRoomById = getRoomById
+
+/**
  * Converts roomId to a short code
  * TWO_PLAYER-1 converts to two1
  * Used for private room creation and joining
@@ -66,8 +92,25 @@ function createArray(length, symbol = '') {
 	return array
 }
 
+function createNewRoomName(roomType, roomNum) {
+	// create a unique room name
+	let newRoomName
+	let i = 0
+	let room
+	console.log('total two player room length', roomNum, twoPlayerRooms)
+	do {
+		// repeat the process if the room already exists...
+		i++
+		newRoomName = `${roomType}-${roomNum + i}`
+		room = getRoomById(newRoomName)
+		console.log('i found the room', room, twoPlayerRooms)
+	} while (room)
+	console.log('the new room name is ', newRoomName)
+	return newRoomName
+}
+
 /**
- * Gets a room with empty slots and also returns extra important
+ * Gets a room with empty slots/creates a new roomName and also returns extra important
  * data like newRoomName, new empty board that can be used for the creation
  * of a new room if the empty room does not exist.
  *
@@ -83,7 +126,7 @@ exports.generateRoomData = roomType => {
 			room = twoPlayerRooms.find(
 				room => !room.private && room.players.length === 1
 			)
-			newRoomName = `${RoomTypes.TWO_PLAYER}-${twoPlayerRooms.length + 1}`
+			newRoomName = createNewRoomName(roomType, twoPlayerRooms.length)
 			board = createArray(9)
 			break
 		}
@@ -94,9 +137,11 @@ exports.generateRoomData = roomType => {
 					room.players.length >= 1 &&
 					room.players.length <= 2
 			)
-			newRoomName = `${RoomTypes.THREE_PLAYER}-${
-				threePlayerRooms.length + 1
-			}`
+
+			newRoomName = createNewRoomName(
+				RoomTypes.THREE_PLAYER,
+				threePlayerRooms.length
+			)
 			board = createArray(16)
 			break
 		}
@@ -107,9 +152,10 @@ exports.generateRoomData = roomType => {
 					room.players.length >= 1 &&
 					room.players.length <= 3
 			)
-			newRoomName = `${RoomTypes.FOUR_PLAYER}-${
-				fourPlayerRooms.length + 1
-			}`
+			newRoomName = createNewRoomName(
+				RoomTypes.FOUR_PLAYER,
+				fourPlayerRooms.length
+			)
 			board = createArray(25)
 			break
 		}

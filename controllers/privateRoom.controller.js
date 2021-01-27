@@ -1,10 +1,10 @@
-const { addPlayer, getRoomById } = require('./room.controller')
+const { addPlayer } = require('./room.controller')
 
 const { startGame } = require('./player.controller')
 
 const { RoomTypes, SYMBOLS } = require('../models/rooms')
 
-const { encodeRoomId, decodeRoomId } = require('../utils/room')
+const { encodeRoomId, decodeRoomId, getRoomById } = require('../utils/room')
 
 /**
  * Create a new room and emit the roomId with the room_created event.
@@ -17,6 +17,7 @@ exports.createRoom = (io, socket) => (
 	let newPlayer = {
 		...player,
 		socketId: socket.id,
+		robot: false,
 	}
 
 	// create a new private room...

@@ -1,3 +1,7 @@
+/**
+ * @file Stores the room design structure/model...
+ */
+
 const RoomTypes = {
 	TWO_PLAYER: 'TWO_PLAYER',
 	THREE_PLAYER: 'THREE_PLAYER',
@@ -7,17 +11,25 @@ let twoPlayerRooms = [
 	// {
 	//  roomType: 'TWO_PLAYER',
 	// 	roomId: 'two-player-room-1',
-	// 	players: [{
-	// 	socketId: 'jdfaad',
-	// 	name: 'sadfdsa',
-	// 	turn: true/false,
-	// }, {
-	// 	socketId: 'jdfaad'
-	// }],
+	// 	players: [
+	// 		{
+	// 			socketId: 'jdfaad',
+	//	 		name: 'sadfdsa',
+	// 			turn: true/false,
+	// 			symbol: 'X'/'Y'/'O','T',
+	// 			roomId: 'TWO_PLAYER-1'
+	// 			robot: true/false,
+	// 		},
+	// 		{
+	//		 	socketId: 'jdfaad'
+	// 			...similar properties
+	// 		}
+	// 	],
 	//	private: true/false,
 	//  board: ['', '', '', '', '', '', '', '', '']
 	//	timeoutId: 328148373,
-	//	timeout: 10 seconds
+	//	timeout: 10 seconds,
+	// 	gameStarted: false,
 	// },
 ]
 let threePlayerRooms = []

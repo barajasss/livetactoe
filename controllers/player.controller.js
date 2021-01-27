@@ -6,7 +6,6 @@ const {
 	getPlayerFromSocketId,
 	removeRoom,
 	markSymbol,
-	getRoomById,
 } = require('./room.controller')
 
 const { MAX_TIMEOUT } = require('../models/rooms')
@@ -18,6 +17,8 @@ const {
 	checkGameDraw,
 	getAutoTurnPattern,
 } = require('../utils/logic')
+
+const { getRoomById } = require('../utils/room')
 
 /**
  * Makes a robot mark the board on behalf of the player.
@@ -68,6 +69,7 @@ const setRoomTimeout = (io, room) => {
 
 const startGame = (io, room) => {
 	const { roomId } = room
+	room.gameStarted = true
 	io.to(roomId).emit('game_started')
 	let playerTurn = setRandomPlayerTurn(roomId)
 	// inform all the players on whose turn it is
@@ -87,6 +89,7 @@ exports.createPlayer = (io, socket) => (
 	let newPlayer = {
 		...player,
 		socketId: socket.id,
+		robot: false,
 	}
 	const room = addPlayer(roomType, newPlayer)
 	const { roomId, players } = room
@@ -176,5 +179,26 @@ exports.disconnect = (io, socket) => () => {
 	if (player) {
 		// only broadcast the disconnect info if the player was found
 		socket.to(player.roomId).emit('player_left', player)
+
+		// make player a robot if he left when game was running...
+
+		// remove room when all players have left and the game never actually started...
+		const room = getRoomById(player.roomId)
+		if (!room) return
+
+		// player becomes a robot when then leave a running game
+		if (room.gameStarted) {
+			player.robot = true
+		}
+
+		// robots give the correct estimate of fixed players even if some left
+		const totalPlayers = room.players.filter(player => player.robot).length
+
+		if (room && totalPlayers === 0 && !room.gameStarted) {
+			console.log('yes room was removed')
+			removeRoom(room.roomId)
+		} else {
+			console.log('no room was not removed')
+		}
 	}
 }

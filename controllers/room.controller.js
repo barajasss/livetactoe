@@ -1,4 +1,4 @@
-const { generateRoomData } = require('../utils/room')
+const { generateRoomData, getRoomById } = require('../utils/room')
 const {
 	SYMBOLS,
 	RoomTypes,
@@ -29,7 +29,6 @@ exports.addPlayer = (
 	}
 
 	let { room, newRoomName, board } = generateRoomData(roomType)
-	console.log(room)
 	if (room && !room.private && !forceCreateNewRoom) {
 		// already an empty public room is there with a waiting player...
 
@@ -77,24 +76,6 @@ exports.addPlayer = (
 		return newRoom
 	}
 }
-
-/**
- * Get the room
- * @param {String} roomId The id of the room to find
- */
-
-const getRoomById = roomId => {
-	let room = twoPlayerRooms.find(room => room.roomId === roomId)
-	if (!room) {
-		room = threePlayerRooms.find(room => room.roomId === roomId)
-	}
-	if (!room) {
-		room = fourPlayerRooms.find(room => room.roomId === roomId)
-	}
-	return room
-}
-
-exports.getRoomById = getRoomById
 
 /**
  * Set random player turn
@@ -161,19 +142,24 @@ exports.setNextPlayerTurn = roomId => {
 exports.removeRoom = roomId => {
 	let room = getRoomById(roomId)
 	const findRoom = room => room.roomId === roomId
+	console.log(room, roomId)
 	if (room) {
+		console.log('DESTROYING ROOMS')
 		// remove the room by finding its index and mutating it...
 		if (room.roomType === RoomTypes.TWO_PLAYER) {
 			const index = twoPlayerRooms.findIndex(findRoom)
 			twoPlayerRooms.splice(index, 1)
+			console.log(twoPlayerRooms)
 			return
 		} else if (room.roomType === RoomTypes.THREE_PLAYER) {
 			const index = threePlayerRooms.findIndex(findRoom)
 			threePlayerRooms.splice(index, 1)
+			console.log(threePlayerRooms)
 			return
 		} else if (room.roomType === RoomTypes.FOUR_PLAYER) {
 			const index = threePlayerRooms.findIndex(findRoom)
 			fourPlayerRooms.splice(index, 1)
+			console.log(fourPlayerRooms)
 			return
 		}
 	}
