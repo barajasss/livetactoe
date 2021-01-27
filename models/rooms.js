@@ -14,6 +14,7 @@ let twoPlayerRooms = [
 	// }, {
 	// 	socketId: 'jdfaad'
 	// }],
+	//	private: true/false,
 	//  board: ['', '', '', '', '', '', '', '', '']
 	//	timeoutId: 328148373,
 	//	timeout: 10 seconds

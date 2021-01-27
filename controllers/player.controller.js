@@ -77,6 +77,8 @@ const startGame = (io, room) => {
 	setRoomTimeout(io, room)
 }
 
+exports.startGame = startGame
+
 exports.createPlayer = (io, socket) => (
 	player,
 	roomType = RoomTypes.TWO_PLAYER

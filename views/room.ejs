@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <title>Live Tac Toe</title>
+</head>
+
+<body>
+
+    <h1>Live Tac Toe</h1>
+    You: <span class='name'></span>
+    <button id='create-btn'>Create a new private room</button>
+    <h4>Or</h4>
+    <p>Join a room</p>
+    <input type='text' id='room-id'>
+    <button id='join-btn'>Join</button>
+    <script>
+        const text = document.getElementById('room-id')
+        const joinBtn = document.getElementById('join-btn')
+        const createBtn = document.getElementById('create-btn')
+
+        joinBtn.onclick = function () {
+            const roomId = text.value
+            window.location.href = `/room/${roomId}`
+        }
+
+        createBtn.onclick = function () {
+            window.location.href = `/room/create`
+        }
+
+    </script>
+</body>
+
+</html>

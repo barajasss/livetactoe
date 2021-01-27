@@ -11,10 +11,17 @@ const {
  * Adds a player to a room. Creates a new room if it does not exist.
  * @param {String} roomType - The type of the room: 'TWO_PLAYER', 'THREE_PLAYER', 'FOUR_PLAYER'
  * @param {Object} player - The player object to add
+ * @param {Boolean} forceCreateNewRoom Force a new room to be created and not search for empty rooms.
+ * @param {Boolean} privateRoom Determine whether the room is private or public.
  * @returns {Object} Room with roomId and players.
  */
 
-exports.addPlayer = (roomType, player) => {
+exports.addPlayer = (
+	roomType,
+	player,
+	forceCreateNewRoom = false,
+	privateRoom = false
+) => {
 	player = {
 		...player,
 		turn: false,
@@ -22,9 +29,9 @@ exports.addPlayer = (roomType, player) => {
 	}
 
 	let { room, newRoomName, board } = generateRoomData(roomType)
-
-	if (room) {
-		// already an empty room is there with a waiting player...
+	console.log(room)
+	if (room && !room.private && !forceCreateNewRoom) {
+		// already an empty public room is there with a waiting player...
 
 		// append some important properties to the player
 		player.symbol = SYMBOLS[room.players.length]
@@ -35,6 +42,8 @@ exports.addPlayer = (roomType, player) => {
 		return room
 	} else {
 		// create a new room if no available rooms with waiting players
+		// also runs if forceCreateNewRoom is true.
+
 		const newRoomId = newRoomName
 
 		// append some important properties to the player
@@ -46,6 +55,11 @@ exports.addPlayer = (roomType, player) => {
 			roomId: newRoomId,
 			players: [player],
 			board,
+			private: false,
+		}
+
+		if (privateRoom) {
+			newRoom.private = true
 		}
 
 		// append the newly created room to the proper rooms array

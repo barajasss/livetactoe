@@ -6,6 +6,52 @@ const {
 } = require('../models/rooms')
 
 /**
+ * Converts roomId to a short code
+ * TWO_PLAYER-1 converts to two1
+ * Used for private room creation and joining
+ */
+
+exports.encodeRoomId = roomId => {
+	const [roomType, roomNum] = roomId.split('-')
+	let roomPrefix
+	switch (roomType) {
+		case RoomTypes.TWO_PLAYER: {
+			roomPrefix = 'two'
+			break
+		}
+		case RoomTypes.THREE_PLAYER: {
+			roomPrefix = 'three'
+			break
+		}
+		case RoomTypes.FOUR_PLAYER: {
+			roomPrefix = 'four'
+			break
+		}
+	}
+	const encodedRoomId = `${roomPrefix}${roomNum}`
+	return encodedRoomId
+}
+
+exports.decodeRoomId = encodedRoomId => {
+	let roomType, roomNum
+	if (encodedRoomId.startsWith('two')) {
+		roomType = RoomTypes.TWO_PLAYER
+		const i = encodedRoomId.indexOf('o') + 1
+		roomNum = Number(encodedRoomId.slice(i))
+	} else if (encodedRoomId.startsWith('three')) {
+		roomType = RoomTypes.THREE_PLAYER
+		const i = encodedRoomId.lastIndexOf('e') + 1
+		roomNum = Number(encodedRoomId.slice(i))
+	} else if (encodedRoomId.startsWith('four')) {
+		roomType = RoomTypes.FOUR_PLAYER
+		const i = encodedRoomId.indexOf('r') + 1
+		roomNum = Number(encodedRoomId.slice(i))
+	}
+	const roomId = `${roomType}-${roomNum}`
+	return roomId
+}
+
+/**
  *
  * @param {Number} length Length of the array
  * @param {*} symbol Symbol/value to use for all the array elements
@@ -33,15 +79,20 @@ exports.generateRoomData = roomType => {
 	switch (roomType) {
 		case RoomTypes.TWO_PLAYER: {
 			// pair up players
-			// search for a room with one player
-			room = twoPlayerRooms.find(room => room.players.length === 1)
+			// search for a public room with one player
+			room = twoPlayerRooms.find(
+				room => !room.private && room.players.length === 1
+			)
 			newRoomName = `${RoomTypes.TWO_PLAYER}-${twoPlayerRooms.length + 1}`
 			board = createArray(9)
 			break
 		}
 		case RoomTypes.THREE_PLAYER: {
 			room = threePlayerRooms.find(
-				room => room.players.length >= 1 && room.players.length <= 2
+				room =>
+					!room.private &&
+					room.players.length >= 1 &&
+					room.players.length <= 2
 			)
 			newRoomName = `${RoomTypes.THREE_PLAYER}-${
 				threePlayerRooms.length + 1
@@ -51,7 +102,10 @@ exports.generateRoomData = roomType => {
 		}
 		case RoomTypes.FOUR_PLAYER: {
 			room = fourPlayerRooms.find(
-				room => room.players.length >= 1 && room.players.length <= 3
+				room =>
+					!room.private &&
+					room.players.length >= 1 &&
+					room.players.length <= 3
 			)
 			newRoomName = `${RoomTypes.FOUR_PLAYER}-${
 				fourPlayerRooms.length + 1

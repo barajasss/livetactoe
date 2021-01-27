@@ -18,18 +18,41 @@ let grids,
 
 // SOCKET EMITTERS
 
-socket.emit('join_game', mainPlayer)
+function updatePlayer(newPlayer) {
+	mainPlayer.socketId = newPlayer.socketId
+	mainPlayer.roomId = newPlayer.roomId
+	mainPlayer.symbol = newPlayer.symbol
+}
 
+if (typeof privateRoom !== 'undefined') {
+	if (roomId === 'create') {
+		// create a new roomId and join it...
+		socket.emit('create_room', mainPlayer)
+	} else {
+		// join the existing room.
+		socket.emit('join_room', mainPlayer, roomId)
+	}
+} else {
+	socket.emit('join_game', mainPlayer)
+}
 // SOCKET LISTENERS
 
 socket.on('timeout', time => {
 	timeDisplay.textContent = 'Time: ' + time
 })
 
+socket.on('room_created', (player, roomId) => {
+	console.log('room_created', roomId)
+	updatePlayer(player)
+	$('#room-display').innerHTML = roomId
+})
+
+socket.on('room_joined', (player, roomId) => {
+	$('#room-display').innerHTML = roomId
+})
+
 socket.on('player_registered', ({ roomId, socketId, symbol }) => {
-	mainPlayer.socketId = socketId
-	mainPlayer.roomId = roomId
-	mainPlayer.symbol = symbol
+	updatePlayer({ socketId, roomId, symbol })
 	nameDisplay.innerHTML = mainPlayer.name
 	console.log('player_registered', mainPlayer)
 })
