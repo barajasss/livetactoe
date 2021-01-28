@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
 
 router.get('/rooms/:roomId', (req, res) => {
 	const roomId = decodeRoomId(req.params.roomId)
+	console.log('trying to get room Id', roomId)
 	if (!roomId) {
 		return errorResponse(res, 400, 'RoomId is required')
 	}
@@ -23,6 +24,8 @@ router.get('/rooms/:roomId', (req, res) => {
 	if (!room) {
 		return errorResponse(res, 404, 'Room not found.')
 	}
+	console.log('got the room', room)
+	delete room.timeoutId
 	return res.status(200).json({
 		message: 'Room found and exists',
 		room,

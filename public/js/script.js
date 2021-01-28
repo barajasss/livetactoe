@@ -55,30 +55,30 @@ function joinPublicRoom() {
 	socket.emit('join_game', mainPlayer, gameType)
 }
 
-function joinPrivateRoom(e) {
+async function joinPrivateRoom(e) {
 	e.preventDefault()
 
 	const roomId = $('#room-id-form').value
 	if (roomId) {
 		// send a request to see if room id exists...
-		fetch(`/rooms/${roomId}`)
-			.then(res => {
-				if (res.ok) {
-					res.json()
-				} else {
-					throw new Error(res.message)
-				}
-			})
-			.then(data => {
-				// everything is ok and room can be joined...
+		try {
+			const res = await fetch(`/rooms/${roomId}`)
+			const data = await res.json()
+			console.log(data)
+			if (!res.ok || !data) {
+				throw new Error(data.message || 'some error')
+			}
+			if (data.room.players.length < data.room.maxPlayers) {
 				console.log('room is found n everything ok')
 				controls.style.display = 'none'
 				statusDisplay.innerHTML = 'Waiting for friends...'
 				socket.emit('join_room', mainPlayer, roomId)
-			})
-			.catch(err => {
-				alert('Room Not found')
-			})
+			} else {
+				throw new Error('Room is full.')
+			}
+		} catch (err) {
+			alert(err)
+		}
 	} else {
 		alert('Please enter a room id')
 	}
@@ -106,7 +106,7 @@ socket.on('room_created', (player, roomId) => {
 	updatePlayer(player)
 	roomDisplay.innerHTML = 'Room ID: ' + roomId
 	hintDisplay.innerHTML =
-		'Tell your friend to enter this roomId. Game will start once there are enough players.'
+		'Tell your friend to enter this roomId. <br />Game will start once there are enough players.'
 })
 
 socket.on('room_joined', (player, roomId, room) => {
@@ -168,7 +168,7 @@ socket.on('turn_played', (playerTurn, gridIndex) => {
 })
 
 socket.on('game_over', result => {
-	statusDisplay.textContent = `Game Over. ${result.message}`
+	statusDisplay.innerHTML = `Game Over. ${result.message}.<br/> Refresh the page to play the game again.`
 	gameOver = true
 })
 

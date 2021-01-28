@@ -14,7 +14,9 @@ const GameTypes = {
 }
 let twoPlayerRooms = [
 	// {
-	//  roomType: 'TWO_PLAYER',
+	//  roomType: 'TWO_PLAYER'/'THREE_PLAYER'/'FOUR_PLAYER',
+	//  gameType: 3/4/5,
+	//  maxPlayers: 2/3/4,
 	// 	roomId: 'two-player-room-1',
 	// 	players: [
 	// 		{

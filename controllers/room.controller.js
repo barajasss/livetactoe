@@ -29,6 +29,7 @@ exports.addPlayer = (
 	}
 
 	let { room, newRoomName, board } = generateRoomData(roomType)
+	let gameType = getGameType(roomType)
 	if (room && !room.private && !forceCreateNewRoom) {
 		// already an empty public room is there with a waiting player...
 
@@ -53,7 +54,8 @@ exports.addPlayer = (
 
 		const newRoom = {
 			roomType,
-			gameType: getGameType(roomType),
+			gameType,
+			maxPlayers: gameType - 1,
 			roomId: newRoomId,
 			players: [player],
 			board,

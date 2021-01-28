@@ -150,6 +150,8 @@ function gameWon(io, player) {
 		},
 		player
 	)
+	// send game_won and winner event
+	io.in(player.roomId).emit('game_won', player)
 	const room = getRoomById(player.roomId)
 	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)
@@ -169,6 +171,8 @@ function gameDraw(io, player) {
 		},
 		player
 	)
+	// send game_draw and winner event
+	io.in(player.roomId).emit('game_draw')
 	const room = getRoomById(player.roomId)
 	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)

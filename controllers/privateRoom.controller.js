@@ -9,6 +9,7 @@ const {
 	decodeRoomId,
 	getRoomById,
 	getRoomType,
+	getGameType,
 } = require('../utils/room')
 
 /**
@@ -53,6 +54,11 @@ exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
 		// room must exist and be private...
 		return
 	}
+	// room must not be full
+	if (room.players.length >= room.maxPlayers) {
+		console.log('Room is full.')
+		return
+	}
 
 	let newPlayer = {
 		...player,
@@ -73,7 +79,7 @@ exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
 
 	socket.emit('player_registered', newPlayer)
 	io.to(roomId).emit('player_joined', players)
-	socket.emit('room_joined', newPlayer, encodedRoomId)
+	socket.emit('room_joined', newPlayer, encodedRoomId, room)
 
 	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
 		startGame(io, room)
