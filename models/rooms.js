@@ -18,7 +18,7 @@ let twoPlayerRooms = [
 	//  roomType: 'TWO_PLAYER'/'THREE_PLAYER'/'FOUR_PLAYER',
 	//  gameType: 3/4/5,
 	//  maxPlayers: 2/3/4,
-	// 	roomId: 'two-player-room-1',
+	// 	roomId: 'TWO_PLAYER-1',
 	// 	players: [
 	// 		{
 	// 			socketId: 'jdfaad',
@@ -34,12 +34,13 @@ let twoPlayerRooms = [
 	// 		}
 	// 	],
 	//	private: true/false,
-	//  board: ['', '', '', '', '', '', '', '', '']
+	//  board: ['', '', '', '', '', '', '', '', ''],
 	//	timeoutId: 328148373,
 	//	timeout: 10 seconds,
 	// 	gameStarted: false,
 	// },
 ]
+
 let threePlayerRooms = []
 let fourPlayerRooms = []
 
