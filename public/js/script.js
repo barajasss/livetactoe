@@ -11,6 +11,9 @@ const mainPlayer = {
 }
 const nameDisplay = $('.name')
 const timeDisplay = $('.time')
+const publicJoinBtn = $('#public-join-btn')
+const privateJoinBtn = $('#private-join-btn')
+const createRoomBtn = $('#create-room-btn')
 
 let grids,
 	mainPlayerTurn = false,
@@ -35,6 +38,22 @@ if (typeof privateRoom !== 'undefined') {
 } else {
 	socket.emit('join_game', mainPlayer)
 }
+
+publicJoinBtn.addEventListener('click', function () {
+	const gameType = $('public-game-type').value
+	socket.emit('join_game', mainPlayer, gameType)
+})
+
+privateJoinBtn.addEventListener('click', function () {
+	const roomId = $('#room-id-form').value
+	socket.emit('join_room', mainPlayer, roomId)
+})
+
+createRoomBtn.addEventListener('click', function () {
+	const gameType = $('private-game-type').value
+	socket.emit('create_room', mainPlayer, gameType)
+})
+
 // SOCKET LISTENERS
 
 socket.on('timeout', time => {

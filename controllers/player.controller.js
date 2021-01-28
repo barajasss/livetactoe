@@ -8,9 +8,7 @@ const {
 	markSymbol,
 } = require('./room.controller')
 
-const { MAX_TIMEOUT } = require('../models/rooms')
-
-const { RoomTypes } = require('../models/rooms')
+const { MAX_TIMEOUT, RoomTypes, GameTypes } = require('../models/rooms')
 
 const {
 	checkGameWin,
@@ -18,7 +16,7 @@ const {
 	getAutoTurnPattern,
 } = require('../utils/logic')
 
-const { getRoomById } = require('../utils/room')
+const { getRoomById, getRoomType } = require('../utils/room')
 
 /**
  * Makes a robot mark the board on behalf of the player.
@@ -83,7 +81,7 @@ exports.startGame = startGame
 
 exports.createPlayer = (io, socket) => (
 	player,
-	roomType = RoomTypes.TWO_PLAYER
+	gameType = GameTypes.TWO_PLAYER
 ) => {
 	// create a player and match with any waiting player.
 	let newPlayer = {
@@ -91,6 +89,7 @@ exports.createPlayer = (io, socket) => (
 		socketId: socket.id,
 		robot: false,
 	}
+	const roomType = getRoomType(gameType)
 	const room = addPlayer(roomType, newPlayer)
 	const { roomId, players } = room
 	newPlayer = players.find(player => player.socketId === newPlayer.socketId)

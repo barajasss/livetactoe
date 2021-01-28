@@ -5,6 +5,44 @@ const {
 	fourPlayerRooms,
 } = require('../models/rooms')
 
+/** game type maps to room type as:
+ * TWO_PLAYER = 3 = 3x3
+ * THREE_PLAYER = 4 = 4x4
+ * FOUR_PLAYER = 5 = 5x5
+ */
+
+exports.getGameType = roomType => {
+	switch (roomType) {
+		case RoomTypes.TWO_PLAYER:
+			return 3
+		case RoomTypes.THREE_PLAYER:
+			return 4
+		case RoomTypes.FOUR_PLAYER:
+			return 5
+		default:
+			return 2
+	}
+}
+
+/** room type maps to game type as:
+ * 3x3 = 3 = TWO_PLAYER
+ * 4x4 = 4 = THREE_PLAYER
+ * 5x5 = 5 = FOUR_PLAYER
+ */
+
+exports.getRoomType = gameType => {
+	switch (gameType) {
+		case 3:
+			return RoomTypes.TWO_PLAYER
+		case 4:
+			return RoomTypes.THREE_PLAYER
+		case 5:
+			return RoomTypes.FOUR_PLAYER
+		default:
+			return RoomTypes.TWO_PLAYER
+	}
+}
+
 /**
  * Get the room
  * @param {String} roomId The id of the room to find

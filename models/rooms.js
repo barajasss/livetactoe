@@ -7,6 +7,11 @@ const RoomTypes = {
 	THREE_PLAYER: 'THREE_PLAYER',
 	FOUR_PLAYER: 'FOUR_PLAYER',
 }
+const GameTypes = {
+	TWO_PLAYER: 3,
+	THREE_PLAYER: 4,
+	FOUR_PLAYER: 5,
+}
 let twoPlayerRooms = [
 	// {
 	//  roomType: 'TWO_PLAYER',
@@ -40,6 +45,7 @@ exports.MAX_TIMEOUT = 10
 
 exports.SYMBOLS = ['X', 'O', 'Y', 'T']
 exports.RoomTypes = RoomTypes
+exports.GameTypes = GameTypes
 exports.twoPlayerRooms = twoPlayerRooms
 exports.threePlayerRooms = threePlayerRooms
 exports.fourPlayerRooms = fourPlayerRooms

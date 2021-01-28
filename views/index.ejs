@@ -6,16 +6,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <title>Live Tac Toe</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
 <body>
+    <div class="container pt-3">
 
-    <h1>Live Tac Toe</h1>
-    You: <span class='name'></span>
-    <div class='grid'>
+        <h2 class='text-center'>Xyot <small>Multiplayer</small></h2>
+        <hr />
+        <h5 class='text-center'>
+            You: <span class='name'></span>
+        </h5>
+
+        <div class="row text-white my-3 controls">
+            <div class="col-md-6 bg-success p-3 py-5 py-md-3">
+                <h3>Public Room</h3>
+                <p>Join a game automatically and play with random players...</p>
+                <p>Select the game type</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <select class="form-control" id='public-game-type'>
+                            <option value=3>3 x 3</option>
+                            <option value=4>4 x 4</option>
+                            <option value=5>5 x 5</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <button id='public-join-btn' class="btn btn-light btn-block my-2 my-md-0">Join Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 bg-dark p-3 py-5 py-md-3">
+                <h3>Private Room</h3>
+                <p class="mb-2">Create a room and play with your friend...</p>
+
+                <div class="row">
+                    <div class="col-md-6 pt-2">
+                        <p>Create a room and share the code with your friend</p>
+                        <p>Select the game type:</p>
+                        <select class="form-control" id='private-game-type'>
+                            <option value=3>3 x 3</option>
+                            <option value=4>4 x 4</option>
+                            <option value=5>5 x 5</option>
+                        </select>
+                        <button id='create-room-btn' class="btn btn-light btn-block my-2">Create Room</button>
+                    </div>
+                    <div class="col-md-6 pt-2">
+                        <p>Or join a room using the code to play with your friend</p>
+                        <input id='room-id-form' type='text' class="text-left form-control">
+                        <button id='private-join-btn' class="btn btn-light btn-block my-2">Join Room</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- controls -->
+
+        <div class='grid'>
+        </div>
+
+        <div class="status">Waiting for players</div>
+        <div class='time'></div>
     </div>
-    <div class="status">Waiting for players</div>
-    <div class='time'></div>
+
+
+    </div><!-- container -->
+
+
+
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/utils.js"></script>
     <script src="/js/script.js"></script>
