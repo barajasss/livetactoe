@@ -10,6 +10,7 @@ const http = require('http').createServer(app)
 // })
 const io = require('socket.io')(http)
 const PORT = process.env.PORT || 3000
+const router = require('./routes/router')
 
 const playerController = require('./controllers/player.controller')
 const privateRoomController = require('./controllers/privateRoom.controller')
@@ -18,21 +19,7 @@ app.use(express.static(__dirname + '/public'))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
-// UI for testing purpose...
-
-app.get('/', (req, res) => {
-	res.render('index')
-})
-
-app.get('/private', (req, res) => {
-	res.render('room')
-})
-
-app.get('/room/:roomId', (req, res) => {
-	res.render('private', {
-		roomId: req.params.roomId,
-	})
-})
+app.use(router)
 
 io.on('connection', socket => {
 	// for public room

@@ -17,7 +17,9 @@
         <h5 class='text-center'>
             You: <span class='name'></span>
         </h5>
-        <p class='text-center'>Board: <span class='board'></span></p>
+        <p class='text-center board'></p>
+        <p class='room-display font-weight-bold text-center'></p>
+        <p class='hint-display text-center'></p>
 
         <div class="row text-white my-3 controls">
             <div class="col-md-6 bg-success p-3 py-5 py-md-3">
@@ -55,8 +57,10 @@
                     </div>
                     <div class="col-md-6 pt-2">
                         <p>Or join a room using the code to play with your friend</p>
-                        <input id='room-id-form' type='text' class="text-left form-control">
-                        <button id='private-join-btn' class="btn btn-light btn-block my-2">Join Room</button>
+                        <form id='join-private-room-form'>
+                            <input id='room-id-form' type='text' class="text-left form-control" placeholder='Room ID'>
+                            <button class="btn btn-light btn-block my-2">Join Room</button>
+                        </form>
                     </div>
                 </div>
             </div>

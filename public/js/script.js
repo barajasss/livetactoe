@@ -14,9 +14,12 @@ const controls = $('.controls')
 const nameDisplay = $('.name')
 const timeDisplay = $('.time')
 const boardDisplay = $('.board')
+const hintDisplay = $('.hint-display')
+const roomDisplay = $('.room-display')
+
 const publicJoinBtn = $('#public-join-btn')
-const privateJoinBtn = $('#private-join-btn')
 const createRoomBtn = $('#create-room-btn')
+const joinPrivateRoomForm = $('#join-private-room-form')
 
 let grids,
 	mainPlayerTurn = false,
@@ -36,7 +39,7 @@ function updatePlayer(newPlayer) {
 
 publicJoinBtn.addEventListener('click', joinPublicRoom)
 
-privateJoinBtn.addEventListener('click', joinPrivateRoom)
+joinPrivateRoomForm.addEventListener('submit', joinPrivateRoom)
 
 createRoomBtn.addEventListener('click', createPrivateRoom)
 
@@ -47,28 +50,45 @@ function joinPublicRoom() {
 	statusDisplay.innerHTML = 'Waiting for players...'
 
 	const gameType = $('#public-game-type').value
-	boardDisplay.innerHTML = `${gameType} x ${gameType}`
+	boardDisplay.innerHTML = `Board: ${gameType} x ${gameType}`
 
 	socket.emit('join_game', mainPlayer, gameType)
 }
 
-function joinPrivateRoom() {
-	controls.style.display = 'none'
-	statusDisplay.innerHTML = 'Waiting for friends...'
+function joinPrivateRoom(e) {
+	e.preventDefault()
 
 	const roomId = $('#room-id-form').value
-	if (!roomId) {
+	if (roomId) {
+		// send a request to see if room id exists...
+		fetch(`/rooms/${roomId}`)
+			.then(res => {
+				if (res.ok) {
+					res.json()
+				} else {
+					throw new Error(res.message)
+				}
+			})
+			.then(data => {
+				// everything is ok and room can be joined...
+				console.log('room is found n everything ok')
+				controls.style.display = 'none'
+				statusDisplay.innerHTML = 'Waiting for friends...'
+				socket.emit('join_room', mainPlayer, roomId)
+			})
+			.catch(err => {
+				alert('Room Not found')
+			})
+	} else {
 		alert('Please enter a room id')
-		socket.emit('join_room', mainPlayer, roomId)
 	}
 }
 
 function createPrivateRoom() {
 	controls.style.display = 'none'
 	statusDisplay.innerHTML = 'Waiting for friend(s)...'
-	boardDisplay.innerHTML = `${gameType} x ${gameType}`
-
 	const gameType = $('#private-game-type').value
+	boardDisplay.innerHTML = `Board: ${gameType} x ${gameType}`
 	socket.emit('create_room', mainPlayer, gameType)
 }
 
@@ -84,11 +104,15 @@ socket.on('timeout', time => {
 socket.on('room_created', (player, roomId) => {
 	console.log('room_created', roomId)
 	updatePlayer(player)
-	$('#room-display').innerHTML = roomId
+	roomDisplay.innerHTML = 'Room ID: ' + roomId
+	hintDisplay.innerHTML =
+		'Tell your friend to enter this roomId. Game will start once there are enough players.'
 })
 
-socket.on('room_joined', (player, roomId) => {
-	$('#room-display').innerHTML = roomId
+socket.on('room_joined', (player, roomId, room) => {
+	console.log('room_joined')
+	roomDisplay.innerHTML = 'Room ID: ' + roomId
+	boardDisplay.innerHTML = `Board: ${room.gameType} x ${room.gameType}`
 })
 
 socket.on('player_registered', ({ roomId, socketId, symbol }) => {
@@ -98,7 +122,9 @@ socket.on('player_registered', ({ roomId, socketId, symbol }) => {
 
 socket.on('game_started', room => {
 	if (!playerCreated) {
+		hintDisplay.innerHTML = ''
 		statusDisplay.textContent = 'Game started'
+
 		playerCreated = true
 		grids = generateGrid(room.gameType)
 

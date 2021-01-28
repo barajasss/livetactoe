@@ -37,7 +37,7 @@ exports.createRoom = (io, socket) => (
 	// send important events necessary to join a private room.
 	socket.emit('player_registered', newPlayer)
 	io.to(roomId).emit('player_joined', players)
-	socket.emit('room_created', newPlayer, encodedRoomId)
+	socket.emit('room_created', newPlayer, encodedRoomId, room)
 }
 
 /**
@@ -45,6 +45,7 @@ exports.createRoom = (io, socket) => (
  */
 
 exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
+	console.log('join_room')
 	const roomId = decodeRoomId(encodedRoomId)
 	const room = getRoomById(roomId)
 
