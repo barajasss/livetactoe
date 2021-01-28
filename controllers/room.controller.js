@@ -59,6 +59,7 @@ exports.addPlayer = (
 			roomId: newRoomId,
 			players: [player],
 			board,
+			isFull: false,
 			private: false,
 		}
 

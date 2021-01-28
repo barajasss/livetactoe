@@ -14,6 +14,7 @@ const GameTypes = {
 }
 let twoPlayerRooms = [
 	// {
+	//  isFull: true/false,
 	//  roomType: 'TWO_PLAYER'/'THREE_PLAYER'/'FOUR_PLAYER',
 	//  gameType: 3/4/5,
 	//  maxPlayers: 2/3/4,

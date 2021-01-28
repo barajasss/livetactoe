@@ -67,7 +67,10 @@ const setRoomTimeout = (io, room) => {
 
 const startGame = (io, room) => {
 	const { roomId } = room
+
 	room.gameStarted = true
+	room.isFull = true
+
 	io.to(roomId).emit('game_started', room)
 	let playerTurn = setRandomPlayerTurn(roomId)
 	// inform all the players on whose turn it is

@@ -68,7 +68,7 @@ async function joinPrivateRoom(e) {
 			if (!res.ok || !data) {
 				throw new Error(data.message || 'some error')
 			}
-			if (data.room.players.length < data.room.maxPlayers) {
+			if (!data.room.isFull) {
 				console.log('room is found n everything ok')
 				controls.style.display = 'none'
 				statusDisplay.innerHTML = 'Waiting for friends...'

@@ -55,7 +55,7 @@ exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
 		return
 	}
 	// room must not be full
-	if (room.players.length >= room.maxPlayers) {
+	if (room.isFull) {
 		console.log('Room is full.')
 		return
 	}
