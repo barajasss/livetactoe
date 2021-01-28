@@ -31,7 +31,7 @@ exports.getGameType = roomType => {
  */
 
 exports.getRoomType = gameType => {
-	switch (gameType) {
+	switch (Number(gameType)) {
 		case 3:
 			return RoomTypes.TWO_PLAYER
 		case 4:

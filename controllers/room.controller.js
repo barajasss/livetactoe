@@ -1,4 +1,4 @@
-const { generateRoomData, getRoomById } = require('../utils/room')
+const { generateRoomData, getRoomById, getGameType } = require('../utils/room')
 const {
 	SYMBOLS,
 	RoomTypes,
@@ -49,8 +49,11 @@ exports.addPlayer = (
 		player.symbol = SYMBOLS[0]
 		player.roomId = newRoomId
 
+		// CREATE NEW ROOM OBJECT
+
 		const newRoom = {
 			roomType,
+			gameType: getGameType(roomType),
 			roomId: newRoomId,
 			players: [player],
 			board,
@@ -65,12 +68,15 @@ exports.addPlayer = (
 		switch (roomType) {
 			case RoomTypes.TWO_PLAYER: {
 				twoPlayerRooms.push(newRoom)
+				break
 			}
 			case RoomTypes.THREE_PLAYER: {
 				threePlayerRooms.push(newRoom)
+				break
 			}
 			case RoomTypes.FOUR_PLAYER: {
 				fourPlayerRooms.push(newRoom)
+				break
 			}
 		}
 		return newRoom
@@ -84,6 +90,10 @@ exports.addPlayer = (
 
 exports.setRandomPlayerTurn = roomId => {
 	const room = getRoomById(roomId)
+	if (!room) {
+		console.log('room  not found')
+		return
+	}
 	const randomIndex = Math.floor(Math.random() * room.players.length)
 	let playerTurn = room.players[randomIndex]
 

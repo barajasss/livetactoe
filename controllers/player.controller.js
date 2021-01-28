@@ -68,7 +68,7 @@ const setRoomTimeout = (io, room) => {
 const startGame = (io, room) => {
 	const { roomId } = room
 	room.gameStarted = true
-	io.to(roomId).emit('game_started')
+	io.to(roomId).emit('game_started', room)
 	let playerTurn = setRandomPlayerTurn(roomId)
 	// inform all the players on whose turn it is
 	io.to(roomId).emit('turn', playerTurn)
@@ -90,6 +90,7 @@ exports.createPlayer = (io, socket) => (
 		robot: false,
 	}
 	const roomType = getRoomType(gameType)
+
 	const room = addPlayer(roomType, newPlayer)
 	const { roomId, players } = room
 	newPlayer = players.find(player => player.socketId === newPlayer.socketId)
