@@ -111,6 +111,29 @@ exports.setRandomPlayerTurn = roomId => {
 }
 
 /**
+ * Set first player turn.
+ * @param {String} roomId
+ */
+
+exports.setFirstPlayerTurn = roomId => {
+	const room = getRoomById(roomId)
+	if (!room) {
+		console.log('room  not found')
+		return
+	}
+	let playerTurn = room.players[0]
+
+	if (playerTurn) {
+		// clear other player turns to false
+		room.players.forEach(player => (player.turn = false))
+
+		// set the random player turn to true
+		playerTurn.turn = true
+		return playerTurn
+	}
+}
+
+/**
  * Get Current player's turn
  * @param {String} roomId Id of the room to get player
  */

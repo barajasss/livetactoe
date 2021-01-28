@@ -1,6 +1,7 @@
 const {
 	addPlayer,
 	setRandomPlayerTurn,
+	setFirstPlayerTurn,
 	getPlayerTurn,
 	setNextPlayerTurn,
 	getPlayerFromSocketId,
@@ -72,7 +73,7 @@ const startGame = (io, room) => {
 	room.isFull = true
 
 	io.to(roomId).emit('game_started', room)
-	let playerTurn = setRandomPlayerTurn(roomId)
+	let playerTurn = setFirstPlayerTurn(roomId)
 	// inform all the players on whose turn it is
 	io.to(roomId).emit('turn', playerTurn)
 
