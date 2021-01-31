@@ -1,14 +1,14 @@
 const express = require('express')
 const app = express()
 const http = require('http').createServer(app)
-// const io = require('socket.io')(http, {
-// 	cors: {
-// 		origin: 'https://example.com',
-// 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-// 		credentials: true,
-// 	},
-// })
-const io = require('socket.io')(http)
+const io = require('socket.io')(http, {
+	cors: {
+		origin: '*',
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		credentials: true,
+	},
+})
+
 const PORT = process.env.PORT || 3000
 const router = require('./routes/router')
 
@@ -20,6 +20,12 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 
 app.use(router)
+
+io.attach(http, {
+	pingInterval: 10000,
+	pingTimeout: 5000,
+	cookie: false,
+})
 
 io.on('connection', socket => {
 	// for public room
