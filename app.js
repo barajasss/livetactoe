@@ -21,11 +21,11 @@ app.set('view engine', 'ejs')
 
 app.use(router)
 
-io.attach(http, {
-	pingInterval: 10000,
-	pingTimeout: 5000,
-	cookie: false,
-})
+// io.attach(http, {
+// 	pingInterval: 10000,
+// 	pingTimeout: 5000,
+// 	cookie: false,
+// })
 
 io.on('connection', socket => {
 	// for public room
@@ -41,5 +41,5 @@ io.on('connection', socket => {
 })
 
 http.listen(PORT, () =>
-	console.log('live-tac-toe app listening at localhost:' + PORT)
+	console.log('xyot, live-tac-toe app listening at localhost:' + PORT)
 )
