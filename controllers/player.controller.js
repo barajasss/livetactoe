@@ -186,6 +186,7 @@ exports.disconnect = (io, socket) => () => {
 	const player = getPlayerFromSocketId(socket.id)
 	if (player) {
 		// only broadcast the disconnect info if the player was found
+		// socket.leave(player.roomId)
 		socket.to(player.roomId).emit('player_left', player)
 
 		// make player a robot if he left when game was running...
