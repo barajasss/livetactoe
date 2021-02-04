@@ -25,6 +25,8 @@ app.use(router)
 
 io.on('connection', socket => {
 	// for public room
+	console.log(socket)
+
 	socket.on('join_game', playerController.createPlayer(io, socket))
 
 	// for private rooms
