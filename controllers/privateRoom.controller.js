@@ -20,6 +20,9 @@ exports.createRoom = (io, socket) => (
 	player,
 	gameType = GameTypes.TWO_PLAYER
 ) => {
+	// logs for logger client
+	io.emit('log_create_room', player, gameType)
+
 	let newPlayer = {
 		...player,
 		socketId: socket.id,
@@ -39,6 +42,9 @@ exports.createRoom = (io, socket) => (
 	socket.emit('player_registered', newPlayer)
 	io.to(roomId).emit('player_joined', players)
 	socket.emit('room_created', newPlayer, encodedRoomId, room)
+
+	// logs for logger client
+	io.emit('log_room_created', newPlayer, encodedRoomId, room)
 }
 
 /**
@@ -47,6 +53,10 @@ exports.createRoom = (io, socket) => (
 
 exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
 	console.log('join_room')
+
+	// logs for logger client
+	io.emit('log_join_room', player, encodedRoomId)
+
 	const roomId = decodeRoomId(encodedRoomId)
 	const room = getRoomById(roomId)
 
@@ -78,8 +88,16 @@ exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
 	// send all the essential and vital events.
 
 	socket.emit('player_registered', newPlayer)
+	// logs for logger client
+	io.emit('log_player_registered', newPlayer)
+
 	io.to(roomId).emit('player_joined', players)
+	// logs for logger client
+	io.emit('log_player_joined', players)
+
 	socket.emit('room_joined', newPlayer, encodedRoomId, room)
+	// logs for logger client
+	io.emit('log_room_joined', player, encodedRoomId, room)
 
 	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
 		startGame(io, room)

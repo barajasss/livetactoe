@@ -29,6 +29,10 @@ function playRobot(io, room) {
 	const gridIndex = getAutoTurnPattern(board)
 	markSymbol(roomId, gridIndex, player.symbol)
 	io.to(roomId).emit('turn_played', player, gridIndex)
+
+	// logs for logger client
+	io.emit('log_turn_played', player, gridIndex)
+
 	return player
 }
 
@@ -59,6 +63,8 @@ const setRoomTimeout = (io, room) => {
 			room.timeout = MAX_TIMEOUT
 			playerTurn = setNextPlayerTurn(roomId)
 			io.to(roomId).emit('turn', playerTurn)
+			// logs for logger client
+			io.emit('log_turn', playerTurn)
 		} else {
 			room.timeout--
 		}
@@ -73,9 +79,16 @@ const startGame = (io, room) => {
 	room.isFull = true
 
 	io.to(roomId).emit('game_started', room)
+
+	// logs for logger client
+	io.emit('log_game_started', room)
+
 	let playerTurn = setFirstPlayerTurn(roomId)
 	// inform all the players on whose turn it is
 	io.to(roomId).emit('turn', playerTurn)
+
+	// logs for logger client
+	io.emit('log_turn', playerTurn)
 
 	// set up timers
 	setRoomTimeout(io, room)
@@ -87,6 +100,9 @@ exports.createPlayer = (io, socket) => (
 	player,
 	gameType = GameTypes.TWO_PLAYER
 ) => {
+	// logs for logger client
+	io.emit('log_join_game', player, gameType)
+
 	// create a player and match with any waiting player.
 	let newPlayer = {
 		...player,
@@ -103,7 +119,12 @@ exports.createPlayer = (io, socket) => (
 	console.log(newPlayer)
 
 	socket.emit('player_registered', newPlayer)
+	// logging for logger
+	io.emit('log_player_registered', newPlayer)
+
 	io.to(roomId).emit('player_joined', players)
+	// logging for logger
+	io.emit('log_player_joined', players)
 
 	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
 		startGame(io, room)
@@ -115,6 +136,9 @@ exports.createPlayer = (io, socket) => (
 }
 
 exports.playTurn = (io, socket) => (player, gridIndex) => {
+	// logging for logger
+	io.emit('log_play_turn', player, gridIndex)
+
 	// broadcast the played turn to other players.
 	console.log('play_turn')
 	const { roomId, name } = player
@@ -122,6 +146,9 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 	// mark the symbol on the board...
 	const board = markSymbol(roomId, gridIndex, player.symbol)
 	socket.to(roomId).emit('turn_played', player, gridIndex)
+
+	// logging for logger
+	io.emit('log_turn_played', player, gridIndex)
 
 	// reset the timers
 	const room = getRoomById(roomId)
@@ -137,6 +164,9 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 	const playerTurn = setNextPlayerTurn(roomId)
 
 	io.to(roomId).emit('turn', playerTurn)
+
+	// logging for logger
+	io.emit('log_turn', playerTurn)
 }
 
 /**
@@ -147,15 +177,20 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 
 function gameWon(io, player) {
 	console.log('game won')
-	io.in(player.roomId).emit(
-		'game_over',
-		{
-			message: `${player.name} won the game...`,
-		},
-		player
-	)
+	const msgObj = {
+		message: `${player.name} won the game...`,
+	}
+	io.in(player.roomId).emit('game_over', msgObj, player)
+
+	// logs for logger client
+	io.emit('log_game_over', msgObj, player)
+
 	// send game_won and winner event
 	io.in(player.roomId).emit('game_won', player)
+
+	// logs for logger client
+	io.emit('log_game_won', player)
+
 	const room = getRoomById(player.roomId)
 	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)
@@ -175,8 +210,16 @@ function gameDraw(io, player) {
 		},
 		player
 	)
+
+	// logs for logger client
+	io.emit('log_game_over', msgObj, player)
+
 	// send game_draw and winner event
 	io.in(player.roomId).emit('game_draw')
+
+	// logs for logger client
+	io.emit('log_game_draw')
+
 	const room = getRoomById(player.roomId)
 	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)
@@ -185,9 +228,15 @@ function gameDraw(io, player) {
 exports.disconnect = (io, socket) => () => {
 	const player = getPlayerFromSocketId(socket.id)
 	if (player) {
+		// logging for logger
+		io.emit('log_disconnect', player)
+
 		// only broadcast the disconnect info if the player was found
 		// socket.leave(player.roomId)
 		socket.to(player.roomId).emit('player_left', player)
+
+		// logs for logger client
+		io.emit('log_player_left', player)
 
 		// make player a robot if he left when game was running...
 

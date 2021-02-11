@@ -14,6 +14,10 @@ router.get('/', (req, res) => {
 	res.render('index')
 })
 
+router.get('/logs', (req, res) => {
+	res.render('logs')
+})
+
 router.get('/rooms/:roomId', (req, res) => {
 	const roomId = decodeRoomId(req.params.roomId)
 	console.log('trying to get room Id', roomId)

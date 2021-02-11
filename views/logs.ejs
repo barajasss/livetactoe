@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+
+        #log-display {
+            margin: 10px 50px;
+        }
+
+        .log {
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+            transition: 0.25s;
+        }
+
+        .log:hover {
+            opacity: 0.85;
+        }
+
+        .success,
+        .dark {
+            color: white;
+        }
+
+        .success {
+            background-color: rgb(0, 114, 0);
+        }
+
+        .dark {
+            background-color: #333;
+        }
+
+        .labels {
+            display: flex;
+            justify-content: center;
+        }
+
+        .server-event-marker,
+        .client-event-marker {
+            height: 20px;
+            width: 20px;
+            margin: 0 10px;
+        }
+
+        .server-event-marker {
+            background-color: black;
+        }
+
+        .client-event-marker {
+            background-color: green;
+        }
+
+        #clear-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            cursor: pointer;
+            background-color: lightgreen;
+            border: none;
+            border-radius: 5px;
+            transition: 0.25s;
+        }
+
+        #clear-btn:hover {
+            background-color: rgb(166, 255, 166);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Xyot Socket Connection Logs</h1>
+    <div class="labels">
+        <h4 style="display: flex; align-items: center; border-right: 2px solid; margin-right: 10px;">
+            <span>Server Event <br />(listened on server):</span>
+            <div class="server-event-marker"></div>
+        </h4>
+        <h4 style="display: flex; align-items: center;">
+            <span>Client Event <br />(listened on client):</span>
+            <div class="client-event-marker"></div>
+        </h4>
+    </div>
+    <div id='log-display'>
+
+    </div>
+    <button id="clear-btn">Clear Logs</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const logDisplay = document.getElementById('log-display')
+        const clearBtn = document.getElementById('clear-btn')
+
+        let logCounter = 1;
+        const logMsg = (msg, type = 'success') => {
+            const el = document.createElement('p');
+            el.className = `log ${type}`
+            el.innerHTML = `${logCounter++}. ${msg}`
+            logDisplay.appendChild(el)
+        }
+        const str = variable => JSON.stringify(variable)
+        const socket = io()
+
+        clearBtn.addEventListener('click', () => {
+            logDisplay.innerHTML = ''
+        })
+
+        // CONNECTION LOGS
+
+        socket.on('log_connected', socketId => {
+            logMsg(`Server Event: connection, <br>msg: Current logger connected to socket.io. <br>socketId: ${socketId}`, 'dark')
+        })
+        socket.on('log_connection', socketId => {
+            logMsg(`Server Event: connection, <br>msg: Someone connected to the socket server. <br>socketId: ${socketId}`, 'dark')
+        })
+        socket.on('log_join_game', (player, gameType) => {
+            logMsg(`Server Event: join_game, <br>msg: Someone joined the game. <br>player Details: ${str(player)}, <br>gameType: ${gametype}`, 'dark')
+        })
+        socket.on('log_player_registered', newPlayer => {
+            logMsg(`Client Event: player_registered, <br>msg: A player registered successfully, <br>newPlayer ${str(newPlayer)}`)
+        })
+        socket.on('log_player_joined', players => {
+            logMsg(`Client Event: player_joined, <br>msg: A player joined, <br>players: ${str(players)}`)
+        })
+
+        // PRIVATE ROOMS
+
+        socket.on('log_create_room', (player, gameType) => {
+            logMsg(`Server Event: create_room, <br>msg: Request received for private room creation, <br>player: ${str(player)}, <br>gameType: ${gameType}`, 'dark')
+        })
+        socket.on('log_room_created', (newPlayer, encodedRoomId, room) => {
+            logMsg(`Client Event: room_created, <br>msg: A private room created successfully, <br>player: ${str(newPlayer)}, <br>encodedRoomId: ${encodedRoomId}, <br>room: ${str(room)}`)
+        })
+        socket.on('log_join_room', (player, encodedRoomId) => {
+            logMsg(`Server Event: join_room, <br>msg: Request to join room received, <br>player: ${str(player)}, <br>encodedRoomId: ${encodedRoomId}`, 'dark')
+        })
+        socket.on('log_room_joined', (newPlayer, encodedRoomId, room) => {
+            logMsg(`Client Event: room_joined, <br>msg: Someone joined a room successfully, <br>player: ${str(newPlayer)}, <br>encodedRoomId: ${encodedRoomId}, <br>room: ${str(room)}`)
+        })
+
+        // PLAYER MOVES AND TURNS
+
+        socket.on('log_play_turn', (playerTurn, gridIndex) => {
+            logMsg(`Server Event: play_turn, <br>msg: Someone wants to make a mark/move. <br>player: ${str(playerTurn)}, <br>gridIndex: ${gridIndex}`, 'dark')
+        })
+        socket.on('log_turn_played', (player, gridIndex) => {
+            logMsg(`Client Event: turn_played, <br>msg: A player made a mark/move, <br>player: ${str(player)}, <br>gridIndex: ${gridIndex}`)
+        })
+        socket.on('log_turn', playerTurn => {
+            logMsg(`Client Event: turn, <br>msg: Someone's turn. <br>player: ${str(playerTurn)}`)
+        })
+
+        // GAME STATUS
+
+        socket.on('log_game_started', room => {
+            logMsg(`Client Event: game_started, <br>msg: A new game has started <br>room details: ${room}`)
+        })
+        socket.on('log_game_over', ({ message }, player) => {
+            logMsg(`Client Event: game_over, <br>msg: Game over in <br>roomId: ${player.roomId}`)
+        })
+        socket.on('log_game_draw', () => {
+            logMsg(`Client Event: game_draw, <br>msg: Game is draw`)
+        })
+        socket.on('log_game_won', player => {
+            logMsg(`Client Event: game_won, <br>msg: Game won by <br>player: ${str(player)}`)
+        })
+
+        // DISCONNECT 
+
+        socket.on('log_player_left', player => {
+            logMsg(`Client Event: player_left, <br>msg: A player left the game. <br>player: ${str(player)}`)
+        })
+        socket.on('log_disconnect', player => {
+            logMsg(`Server Event: disconnect, <br>msg: Someone will leave the game. <br>player: ${str(player)}`, 'dark')
+        })
+    </script>
+</body>
+
+</html>

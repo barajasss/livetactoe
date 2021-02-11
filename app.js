@@ -23,9 +23,16 @@ app.set('view engine', 'ejs')
 
 app.use(router)
 
+// log_event_name is used to display logs on logs.ejs
+
 io.on('connection', socket => {
 	// for public room
-	console.log(socket)
+	// console.log('socket log', socket)
+
+	// emit to the log connector whenever it connects
+	socket.emit('log_connected', socket.id)
+	// emit to the log connector when someone connects
+	io.emit('log_connection', socket.id)
 
 	socket.on('join_game', playerController.createPlayer(io, socket))
 
