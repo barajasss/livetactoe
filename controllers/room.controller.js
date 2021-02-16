@@ -154,10 +154,13 @@ exports.setNextPlayerTurn = roomId => {
 	const room = getRoomById(roomId)
 	let playerTurnIndex = room.players.findIndex(player => player.turn)
 	let playerTurn
-	// this case will probably not run
-	if (playerTurnIndex !== -1 && room.players) {
+
+	// when there are no players, the player turn is set to the first player
+
+	if (playerTurnIndex === -1 && room.players) {
 		playerTurn = room.players[0]
 		playerTurn.turn = true
+		return playerTurn
 	}
 
 	// set the next player as the active current player

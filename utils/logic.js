@@ -193,9 +193,9 @@ function intersectionArray(x, y) {
 
 // Check if the player with the symbol(x, o, y, t) won...
 
-exports.getRobotMove = (board, symbol) => {
-	let game_type = getGameType(board)
-}
+// exports.getRobotMove = (board, symbol) => {
+// 	let game_type = getGameType(board)
+// }
 
 exports.checkGameWin = (board, symbol) => {
 	let game_type = getGameType(board)
