@@ -204,6 +204,16 @@ exports.removeRoom = roomId => {
 	}
 }
 
+/* remove the player from room when they leave before the game starts... */
+
+exports.removePlayer = (room, playerToRemove) => {
+	// update the player with the filtered array...
+	room.players = room.players.filter(
+		player => player.socketId !== playerToRemove.socketId
+	)
+	console.log('removeplayer', room.players)
+}
+
 exports.getPlayerFromSocketId = socketId => {
 	let player
 

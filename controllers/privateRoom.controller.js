@@ -40,7 +40,7 @@ exports.createRoom = (io, socket) => (
 
 	// send important events necessary to join a private room.
 	socket.emit('player_registered', newPlayer)
-	io.to(roomId).emit('player_joined', players)
+	io.to(roomId).emit('player_joined', players, newPlayer)
 	socket.emit('room_created', newPlayer, encodedRoomId, room)
 
 	// logs for logger client
@@ -91,9 +91,9 @@ exports.joinRoom = (io, socket) => (player, encodedRoomId) => {
 	// logs for logger client
 	io.emit('log_player_registered', newPlayer)
 
-	io.to(roomId).emit('player_joined', players)
+	io.to(roomId).emit('player_joined', players, newPlayer)
 	// logs for logger client
-	io.emit('log_player_joined', players)
+	io.emit('log_player_joined', players, newPlayer)
 
 	socket.emit('room_joined', newPlayer, encodedRoomId, room)
 	// logs for logger client

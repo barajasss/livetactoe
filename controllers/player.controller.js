@@ -7,6 +7,7 @@ const {
 	getPlayerFromSocketId,
 	removeRoom,
 	markSymbol,
+	removePlayer,
 } = require('./room.controller')
 
 const { MAX_TIMEOUT, RoomTypes, GameTypes } = require('../models/rooms')
@@ -122,9 +123,9 @@ exports.createPlayer = (io, socket) => (
 	// logging for logger
 	io.emit('log_player_registered', newPlayer)
 
-	io.to(roomId).emit('player_joined', players)
+	io.to(roomId).emit('player_joined', players, newPlayer)
 	// logging for logger
-	io.emit('log_player_joined', players)
+	io.emit('log_player_joined', players, newPlayer)
 
 	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
 		startGame(io, room)
@@ -212,7 +213,13 @@ function gameDraw(io, player) {
 	)
 
 	// logs for logger client
-	io.emit('log_game_over', msgObj, player)
+	io.emit(
+		'log_game_over',
+		{
+			message: `It is draw`,
+		},
+		player
+	)
 
 	// send game_draw and winner event
 	io.in(player.roomId).emit('game_draw')
@@ -228,10 +235,8 @@ function gameDraw(io, player) {
 exports.disconnect = (io, socket) => () => {
 	const player = getPlayerFromSocketId(socket.id)
 	if (player) {
-		// logging for logger
-		io.emit('log_disconnect', player)
-
 		// only broadcast the disconnect info if the player was found
+
 		// socket.leave(player.roomId)
 		socket.to(player.roomId).emit('player_left', player)
 
@@ -247,12 +252,17 @@ exports.disconnect = (io, socket) => () => {
 		// player becomes a robot when then leave a running game
 		if (room.gameStarted) {
 			player.robot = true
+		} else {
+			// remove the player if they left before game starting...
+			removePlayer(room, player)
 		}
 
 		// robots give the correct estimate of fixed players even if some left
-		const totalPlayers = room.players.filter(player => player.robot).length
+		// const totalPlayers = room.players.filter(player => player.robot).length
 
-		if (room && totalPlayers === 0 && !room.gameStarted) {
+		// remove room only if the all & then last player left before starting the game...
+
+		if (room && room.players.length === 0 && !room.gameStarted) {
 			console.log('yes room was removed')
 			removeRoom(room.roomId)
 		} else {
