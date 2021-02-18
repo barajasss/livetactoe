@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const http = require('http').createServer(app)
+const cors = require('cors')
 // const io = require('socket.io')(http)
 
 const io = require('socket.io')(http, {
@@ -21,6 +22,7 @@ app.use(express.static(__dirname + '/public'))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
+app.use(cors())
 app.use(router)
 
 // log_event_name is used to display logs on logs.ejs

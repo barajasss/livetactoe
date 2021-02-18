@@ -19,6 +19,7 @@ router.get('/logs', (req, res) => {
 })
 
 router.get('/rooms/:roomId', (req, res) => {
+	/* find room by room code */
 	const roomId = decodeRoomId(req.params.roomId)
 	console.log('trying to get room Id', roomId)
 	if (!roomId) {
