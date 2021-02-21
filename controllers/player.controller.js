@@ -54,8 +54,9 @@ const setRoomTimeout = (io, room) => {
 		if (room.timeout <= 1) {
 			// if the player reaches the last second then robot will make its move...
 			const player = playRobot(io, room)
-			if (checkGameWin(room.board, player.symbol)) {
-				return gameWon(io, player)
+			const winPattern = checkGameWin(room.board, player.symbol)
+			if (winPattern) {
+				return gameWon(io, player, winPattern)
 			}
 			if (checkGameDraw(room.board)) {
 				return gameDraw(io, player)
@@ -154,9 +155,9 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 	// reset the timers
 	const room = getRoomById(roomId)
 	setRoomTimeout(io, room)
-
-	if (checkGameWin(board, player.symbol)) {
-		return gameWon(io, player)
+	const winPattern = checkGameWin(board, player.symbol)
+	if (winPattern) {
+		return gameWon(io, player, winPattern)
 	}
 	if (checkGameDraw(board)) {
 		return gameDraw(io, player)
@@ -176,7 +177,7 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
  * @param {Object} player To send the winning player information.
  */
 
-function gameWon(io, player) {
+function gameWon(io, player, winPattern) {
 	console.log('game won')
 	const msgObj = {
 		message: `${player.name} won the game...`,
@@ -186,11 +187,12 @@ function gameWon(io, player) {
 	// logs for logger client
 	io.emit('log_game_over', msgObj, player)
 
+	console.log('winPattern', winPattern)
 	// send game_won and winner event
-	io.in(player.roomId).emit('game_won', player)
+	io.in(player.roomId).emit('game_won', player, winPattern)
 
 	// logs for logger client
-	io.emit('log_game_won', player)
+	io.emit('log_game_won', player, winPattern)
 
 	const room = getRoomById(player.roomId)
 	clearInterval(room.timeoutId)

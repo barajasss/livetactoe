@@ -74,7 +74,7 @@ function getPatternFromIndex(game_type, index) {
 	// convert to matrix type of index(11, 22, 33) from linear index(0, 1, 2)
 	const row = Math.floor(index / game_type) + 1
 	const col = (index % 3) + 1
-	return `${row}${col}`
+	return Number(`${row}${col}`)
 }
 
 function getIndexFromPattern(game_type, matrix) {
@@ -96,7 +96,11 @@ function isWinner(game_type, win_pattern, board, symbol) {
 		}
 	}
 
-	if (match === win_pattern.length) return true
+	if (match === win_pattern.length) {
+		// update win pattern with array indexes...
+		win_pattern = win_pattern.map(wp => getIndexFromPattern(game_type, wp))
+		return win_pattern
+	}
 	return false
 }
 
@@ -154,15 +158,16 @@ function getMostNearestPattern(board, symbol) {
 	let selected = createSelectionArray(board, symbol)
 	let win_patterns = getWinnerPatterns(game_type)
 
-	finished = false
 	for (let x = 0; x < win_patterns.length; x++) {
 		let intersected = intersectionArray(selected, win_patterns[x])
 
 		if (intersected.length === win_patterns[x].length - 1) {
 			// if any position is found empty then return that pattern; otherwise will check another one from list
 			for (let y = 0; y < win_patterns[x].length; y++) {
-				obj = document.getElementById(win_patterns[x][y])
-				if (obj.value === '' || obj.value === ' ') {
+				/** start of update */
+				let index = getIndexFromPattern(game_type, win_patterns[x][y])
+				/** end of update */
+				if (board[index] === '' || board[index] === ' ') {
 					// Return pattern if got an empty; otherwise will match others
 					return win_patterns[x]
 				}
@@ -201,9 +206,9 @@ exports.checkGameWin = (board, symbol) => {
 	let game_type = getGameType(board)
 	let win_patterns = getWinnerPatterns(game_type)
 	for (let x = 0; x < win_patterns.length; x++) {
-		const win = isWinner(game_type, win_patterns[x], board, symbol)
-		if (win) {
-			return true
+		const win_pattern = isWinner(game_type, win_patterns[x], board, symbol)
+		if (win_pattern) {
+			return win_pattern
 		}
 	}
 }
