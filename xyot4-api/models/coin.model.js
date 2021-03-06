@@ -21,27 +21,36 @@ const NEW_GAME_COINS = 20
 const DRAW_COINS = 10
 
 const Coin = {
-	async createNewCoinTable(user_id) {
+	async createNewCoinTable(userId) {
 		const query = `INSERT INTO ${COIN_TABLE} (user_id, total_coins) VALUES(?, ?)`
-		const [result] = await pool.execute(query, [user_id, INITIAL_COINS])
+		const [result] = await pool.execute(query, [userId, INITIAL_COINS])
 		if (result.affectedRows) {
 			return true
 		}
 		return false
 	},
-	async findCoinsByUserId(user_id) {
-		const getCoin = async () => {
-			const query = `SELECT * FROM ${COIN_TABLE} WHERE user_id = ?`
-			const [rows, fields] = await pool.execute(query, [user_id])
-			if (rows.length > 0) return rows[0]
+	async addCoins(userId, amount = 0) {
+		// on coin purchase new coins can be added using this api
+		const query = `UPDATE ${COIN_TABLE} SET total_coins = total_coins + ${amount} WHERE user_id = ?`
+		const [result] = await pool.execute(query, [userId])
+
+		const getCoin = this.generateGetCoin(userId)
+
+		if (result.affectedRows) {
+			const coin = await getCoin()
+			return coin
 		}
+		return null
+	},
+	async findCoinsByUserId(userId) {
+		const getCoin = this.generateGetCoin(userId)
 		// create coin table if it did not exist before
 		let coin = await getCoin()
 		if (coin) {
 			return coin
 		} else {
 			// if coin table did not exist then create it.
-			const newCoinTableCreated = await this.createNewCoinTable(user_id)
+			const newCoinTableCreated = await this.createNewCoinTable(userId)
 			console.log(newCoinTableCreated)
 			if (newCoinTableCreated) {
 				coin = await getCoin()
@@ -50,7 +59,7 @@ const Coin = {
 		}
 		return null
 	},
-	async updateCoins(user_id, updateType) {
+	async updateCoins(userId, updateType) {
 		let query = `UPDATE ${COIN_TABLE} SET total_coins = total_coins - 0 WHERE user_id = ?`
 
 		switch (updateType) {
@@ -67,11 +76,19 @@ const Coin = {
 				break
 			}
 		}
-		const [result] = await pool.execute(query, [user_id])
+		const [result] = await pool.execute(query, [userId])
 		if (result.affectedRows) {
 			return true
 		}
 		return false
+	},
+	generateGetCoin(userId) {
+		// utility function to return a coin getter function
+		return async () => {
+			const query = `SELECT * FROM ${COIN_TABLE} WHERE user_id = ?`
+			const [rows, fields] = await pool.execute(query, [userId])
+			if (rows.length > 0) return rows[0]
+		}
 	},
 }
 

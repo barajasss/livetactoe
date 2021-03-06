@@ -4,6 +4,8 @@ const coinController = require('../controllers/coin.controller')
 
 router.get('/:userId', coinController.getCoinByUserId)
 
+router.patch('/:userId', coinController.addCoins)
+
 router.patch('/play/:userId', coinController.updateCoins(-1))
 router.patch('/draw/:userId', coinController.updateCoins(0))
 router.patch('/won/:userId', coinController.updateCoins(1))

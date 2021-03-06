@@ -21,8 +21,8 @@ const User = {
 	async createUser(name, email) {
 		const query = `INSERT INTO ${USER_TABLE} (name, user_email) VALUES(?, ?)`
 		const [result] = await pool.execute(query, [name, email])
-		if (result.affectedRows > 1) {
-			return insertId
+		if (result.affectedRows) {
+			return result.insertId
 		}
 	},
 	async verifyOtp(email, otp) {
