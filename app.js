@@ -1,7 +1,11 @@
 const express = require('express')
 const app = express()
+const dotenv = require('dotenv')
 const http = require('http').createServer(app)
 const cors = require('cors')
+
+dotenv.config()
+
 // const io = require('socket.io')(http)
 
 const io = require('socket.io')(http, {
@@ -14,6 +18,7 @@ const io = require('socket.io')(http, {
 
 const PORT = process.env.PORT || 3000
 const router = require('./routes/router')
+const apiRouter = require('./xyot4-api/api.router')
 
 const playerController = require('./controllers/player.controller')
 const privateRoomController = require('./controllers/privateRoom.controller')
@@ -22,8 +27,12 @@ app.use(express.static(__dirname + '/public'))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
+app.use(express.json())
 app.use(cors())
 app.use(router)
+app.use(apiRouter)
+
+console.log('Environment ', process.env.NODE_ENV)
 
 // log_event_name is used to display logs on logs.ejs
 
