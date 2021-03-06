@@ -7,6 +7,7 @@ exports.loginAndSendOtp = async (req, res) => {
 	// if email did not exist before, a new account is created automatically...
 
 	const { name, email } = req.body
+	console.log(name, email)
 
 	if (!name || !email) {
 		return res.status(400).json({ msg: 'name and email are required' })
