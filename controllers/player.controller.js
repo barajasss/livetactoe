@@ -12,6 +12,8 @@ const {
 
 const { MAX_TIMEOUT, RoomTypes, GameTypes } = require('../models/rooms')
 
+const Coin = require('../xyot4-api/models/coin.model')
+
 const {
 	checkGameWin,
 	checkGameDraw,
@@ -49,17 +51,17 @@ const setRoomTimeout = (io, room) => {
 	clearInterval(room.timeoutId)
 
 	// set a new interval
-	room.timeoutId = setInterval(() => {
+	room.timeoutId = setInterval(async () => {
 		// this function will run continuously every second
 		if (room.timeout <= 1) {
 			// if the player reaches the last second then robot will make its move...
 			const player = playRobot(io, room)
 			const winPattern = checkGameWin(room.board, player.symbol)
 			if (winPattern) {
-				return gameWon(io, player, winPattern)
+				return await gameWon(io, player, winPattern)
 			}
 			if (checkGameDraw(room.board)) {
-				return gameDraw(io, player)
+				return await gameDraw(io, player)
 			}
 
 			room.timeout = MAX_TIMEOUT
@@ -74,11 +76,14 @@ const setRoomTimeout = (io, room) => {
 	}, 1000)
 }
 
-const startGame = (io, room) => {
+const startGame = async (io, room) => {
 	const { roomId } = room
 
 	room.gameStarted = true
 	room.isFull = true
+
+	// deduct coins for every player
+	await spendPlayCoins(room)
 
 	io.to(roomId).emit('game_started', room)
 
@@ -98,7 +103,56 @@ const startGame = (io, room) => {
 
 exports.startGame = startGame
 
-exports.createPlayer = (io, socket) => (
+//
+///// -- COIN LOGIC FOR GAMEPLAY -- //////
+//
+
+async function spendPlayCoins(room) {
+	/* each player's coins get deducted by 20 on game start */
+	// no error is thrown if fails to deduct coins
+	if (room.players.length > 0) {
+		for (let i = 0; i < room.players.length; i++) {
+			const player = room.players[i]
+			// -1 for spending coins
+			const updateType = -1
+			console.log('spend play coins - player: ', player)
+			if (player.id) {
+				await Coin.updateCoins(player.id, updateType)
+			}
+		}
+	}
+}
+
+async function addWonCoins(player) {
+	/* winner player gets 40 coins */
+	// no error is thrown if fails to add coins
+	// 1 for spending coins
+	const updateType = 1
+	if (player.id) {
+		await Coin.updateCoins(player.id, updateType)
+	}
+}
+
+async function addDrawCoins(room) {
+	/* rewarded 10 coins to every player on draw */
+	// no error is thrown if fails to deduct coins
+	if (room.players.length > 0) {
+		for (let i = 0; i < room.players.length; i++) {
+			const player = room.players[i]
+			// -1 for spending coins
+			const updateType = 0
+			if (player.id) {
+				await Coin.updateCoins(player.id, updateType)
+			}
+		}
+	}
+}
+
+//
+///// -- END OF COIN LOGIC FOR GAMEPLAY -- //////
+//
+
+exports.createPlayer = (io, socket) => async (
 	player,
 	gameType = GameTypes.TWO_PLAYER
 ) => {
@@ -129,15 +183,15 @@ exports.createPlayer = (io, socket) => (
 	io.emit('log_player_joined', players, newPlayer)
 
 	if (roomType === RoomTypes.TWO_PLAYER && players.length === 2) {
-		startGame(io, room)
+		await startGame(io, room)
 	} else if (roomType === RoomTypes.THREE_PLAYER && players.length === 3) {
-		startGame(io, room)
+		await startGame(io, room)
 	} else if (roomType === RoomTypes.FOUR_PLAYER && players.length === 4) {
-		startGame(io, room)
+		await startGame(io, room)
 	}
 }
 
-exports.playTurn = (io, socket) => (player, gridIndex) => {
+exports.playTurn = (io, socket) => async (player, gridIndex) => {
 	// logging for logger
 	io.emit('log_play_turn', player, gridIndex)
 
@@ -157,10 +211,10 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
 	setRoomTimeout(io, room)
 	const winPattern = checkGameWin(board, player.symbol)
 	if (winPattern) {
-		return gameWon(io, player, winPattern)
+		return await gameWon(io, player, winPattern)
 	}
 	if (checkGameDraw(board)) {
-		return gameDraw(io, player)
+		return await gameDraw(io, player)
 	}
 
 	const playerTurn = setNextPlayerTurn(roomId)
@@ -177,11 +231,15 @@ exports.playTurn = (io, socket) => (player, gridIndex) => {
  * @param {Object} player To send the winning player information.
  */
 
-function gameWon(io, player, winPattern) {
+async function gameWon(io, player, winPattern) {
 	console.log('game won')
 	const msgObj = {
 		message: `${player.name} won the game...`,
 	}
+
+	// add 40 coins to the winner player...
+	await addWonCoins(player)
+
 	io.in(player.roomId).emit('game_over', msgObj, player)
 
 	// logs for logger client
@@ -204,8 +262,13 @@ function gameWon(io, player, winPattern) {
  * @param {Socket Object} io To broadcast the winner to all the players.
  * @param {Object} player To send the winning player information.
  */
-function gameDraw(io, player) {
+async function gameDraw(io, player) {
 	console.log('game draw')
+	const room = getRoomById(player.roomId)
+
+	// add 10 coins to every player in the room
+	await addDrawCoins(room)
+
 	io.in(player.roomId).emit(
 		'game_over',
 		{
@@ -229,7 +292,6 @@ function gameDraw(io, player) {
 	// logs for logger client
 	io.emit('log_game_draw')
 
-	const room = getRoomById(player.roomId)
 	clearInterval(room.timeoutId)
 	removeRoom(player.roomId)
 }
