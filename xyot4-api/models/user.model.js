@@ -108,13 +108,14 @@ const User = {
 		const user_phone = user.user_phone || currentUser.user_phone
 		const city = user.city || currentUser.city
 		const state = user.state || currentUser.state
+		const avatar = user.avatar || currentUser.avatar
 
 		console.log(user)
 		const query = `
 			UPDATE ${USER_TABLE} AS u
 			INNER JOIN ${COIN_TABLE} AS t
 			ON u.id = t.user_id
-			SET u.name = ?, u.user_phone = ?, u.city = ?, u.state = ?
+			SET u.name = ?, u.user_phone = ?, u.city = ?, u.state = ?, u.avatar = ?
 			WHERE u.id = ?
 		`
 
@@ -123,6 +124,7 @@ const User = {
 			user_phone,
 			city,
 			state,
+			avatar,
 			id,
 		])
 

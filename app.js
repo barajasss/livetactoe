@@ -22,6 +22,7 @@ const apiRouter = require('./xyot4-api/api.router')
 
 const playerController = require('./controllers/player.controller')
 const privateRoomController = require('./controllers/privateRoom.controller')
+const messageController = require('./controllers/message.controller')
 
 app.use(express.static(__dirname + '/public'))
 app.set('views', './views')
@@ -50,6 +51,8 @@ io.on('connection', socket => {
 	// for private rooms
 	socket.on('create_room', privateRoomController.createRoom(io, socket))
 	socket.on('join_room', privateRoomController.joinRoom(io, socket))
+
+	socket.on('message', messageController.sendMessage(io, socket))
 
 	// other
 	socket.on('play_turn', playerController.playTurn(io, socket))

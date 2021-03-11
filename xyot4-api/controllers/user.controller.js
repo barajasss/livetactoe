@@ -10,7 +10,7 @@ exports.getUser = async (req, res) => {
 			data: user,
 		})
 	}
-	return res.status(500).json({ msg: 'could not find user ' })
+	return res.status(500).json({ msg: 'could not find user' })
 }
 
 exports.updateUser = async (req, res) => {
