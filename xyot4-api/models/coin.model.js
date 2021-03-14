@@ -42,6 +42,19 @@ const Coin = {
 		}
 		return null
 	},
+	async deductCoins(userId, amount = 0) {
+		// on coin purchase new coins can be added using this api
+		const query = `UPDATE ${COIN_TABLE} SET total_coins = total_coins - ${amount} WHERE user_id = ?`
+		const [result] = await pool.execute(query, [userId])
+
+		const getCoin = this.generateGetCoin(userId)
+
+		if (result.affectedRows) {
+			const coin = await getCoin()
+			return coin
+		}
+		return null
+	},
 	async findCoinsByUserId(userId) {
 		const getCoin = this.generateGetCoin(userId)
 		// create coin table if it did not exist before
