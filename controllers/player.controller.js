@@ -168,6 +168,8 @@ exports.createPlayer = (io, socket) => async (
 	const roomType = getRoomType(gameType)
 
 	const room = addPlayer(roomType, newPlayer)
+	if(!room) return 
+	
 	const { roomId, players } = room
 	newPlayer = players.find(player => player.socketId === newPlayer.socketId)
 	socket.join(roomId)

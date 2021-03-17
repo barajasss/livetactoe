@@ -3,6 +3,7 @@ const app = express()
 const dotenv = require('dotenv')
 const http = require('http').createServer(app)
 const cors = require('cors')
+const { coinUpdater } = require('./xyot4-api/controllers/coin.controller')
 
 dotenv.config()
 
@@ -32,6 +33,9 @@ app.use(express.json())
 app.use(cors())
 app.use(router)
 app.use(apiRouter)
+
+// updates coins every interval per day - adds 20 coins to every user per day whose coins are below 250
+coinUpdater()
 
 console.log('Environment ', process.env.NODE_ENV)
 

@@ -1,5 +1,24 @@
 const Coin = require('../models/coin.model')
 
+exports.coinUpdater = () => {
+	// updates the coin every 24 hours.
+	const second = 1000
+	const minute = 60 * second
+	const hour = 60 * minute
+	const day = 24 * hour
+
+	let i = 1
+	const intervalId = setInterval(async () => {
+		console.log('coin updater running')
+		// clear the rest of the intervals...
+		while (i < intervalId) {
+			clearInterval(i++)
+		}
+		/* adds 20 coins by default */
+		await Coin.addCoinsToAll()
+	}, day)
+}
+
 exports.getCoinByUserId = async (req, res) => {
 	const { userId } = req.params
 	const coin = await Coin.findCoinsByUserId(userId)

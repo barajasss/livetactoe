@@ -103,6 +103,16 @@ const Coin = {
 			if (rows.length > 0) return rows[0]
 		}
 	},
+	async addCoinsToAll(amount = 20) {
+		/* updates the coins for everyone */
+		const maxCoins = 250
+		const query = `UPDATE ${COIN_TABLE} SET total_coins = total_coins + ${amount} WHERE total_coins < ${maxCoins}`
+		const [result] = await pool.execute(query)
+		if (result.affectedRows > 0) {
+			return true
+		}
+		return false
+	},
 }
 
 module.exports = Coin

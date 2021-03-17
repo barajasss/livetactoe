@@ -29,6 +29,16 @@ exports.addPlayer = (
 	}
 
 	let { room, newRoomName, board } = generateRoomData(roomType)
+
+	// if there is already a player with the same id then don't add to room
+	const playerExists =
+		room &&
+		room.players.findIndex(p => p && p.id === (player && player.id)) !== -1
+	if (playerExists) {
+		// stop looking further and cancel the request...
+		return
+	}
+
 	let gameType = getGameType(roomType)
 	if (room && !room.private && !forceCreateNewRoom) {
 		// already an empty public room is there with a waiting player...
