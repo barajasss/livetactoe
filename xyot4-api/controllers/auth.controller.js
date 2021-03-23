@@ -1,6 +1,7 @@
 const pool = require('../connection')
 const User = require('../models/user.model')
 const Coin = require('../models/coin.model')
+const Leaderboard = require('../models/leaderboard.model')
 
 exports.loginAndSendOtp = async (req, res) => {
 	// every time user has to verify otp for logging in
@@ -24,10 +25,11 @@ exports.loginAndSendOtp = async (req, res) => {
 			msg: 'otp sent',
 		})
 	} else {
-		// create a new user and initialize other tables.
+		// create a new user and initialize the other dependent tables.
 
 		const insertId = await User.createUser(name, email)
 		await Coin.createNewCoinTable(insertId)
+		await Leaderboard.createNew(insertId)
 
 		await User.sendOtp(email)
 		return res
