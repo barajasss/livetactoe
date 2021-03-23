@@ -1,5 +1,4 @@
 const pool = require('../connection')
-const { createNewCoinTable } = require('./coin.model')
 const LEADERBOARD_TABLE = 'leaderboard'
 const USER_TABLE = 'users'
 
@@ -27,9 +26,10 @@ const Avatar = {
 		let query = `SELECT wins FROM ${LEADERBOARD_TABLE} WHERE user_id=?`
 		const [rows, fields] = await pool.execute(query, [userId])
 		let level, wins
+
 		if (rows.length > 0) {
 			/* calculate level */
-			wins = rows[0]
+			wins = rows[0].wins + 1
 			function getWins(level) {
 				/* returns the minimum wins required to reach that level */
 				/* sum of arithmetic sequence (n * (2a + (n-1)d)) / 2 */
@@ -45,7 +45,7 @@ const Avatar = {
 			return null
 		}
 
-		query = `UPDATE ${LEADERBOARD_TABLE} SET wins=? AND level=? WHERE user_id=?`
+		query = `UPDATE ${LEADERBOARD_TABLE} SET wins = ?, level = ? WHERE user_id = ?`
 		const [result] = await pool.execute(query, [wins, level, userId])
 
 		/* also return the wins */

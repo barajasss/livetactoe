@@ -32,7 +32,7 @@ exports.getLeaderboard = async (req, res) => {
 exports.addWin = async (req, res) => {
 	const { userId } = req.params
 	/* increment win count and update level of the user */
-	const data = await Leaderboard.updateWin(userId)
+	const data = await Leaderboard.updateWin(Number(userId))
 	if (data) {
 		return res.status(200).json({
 			msg: 'wins and level updated successfully',
