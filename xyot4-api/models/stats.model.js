@@ -6,16 +6,27 @@ const USER_TABLE = 'users'
 const Stats = {
 	async createNew(userId) {
 		const level = 0
-		const wins = 0
-		let query = `INSERT INTO ${STATS_TABLE} (user_id, wins, level) VALUES(?, ?, ?)`
-		const [result] = await pool.execute(query, [userId, wins, level])
+		let query = `INSERT INTO ${STATS_TABLE} (user_id, level) VALUES(?, ?)`
+		const [result] = await pool.execute(query, [userId, level])
 		if (result.affectedRows > 0) {
 			/* return the inserted data */
-			return { userId, wins, level }
+			return { userId, level }
 		}
 		return null
 	},
+	async createIfNotExists(userId) {
+		// check if table exists
+		const query = `SELECT * FROM ${STATS_TABLE} WHERE user_id = ?`
+		const [rows, fields] = await pool.execute(query, [userId])
+		if (rows.length > 0) {
+			// table exists
+		} else {
+			// table does not exist already so create a new one and proceed with other operations...
+			return await this.createNew(userId)
+		}
+	},
 	async incrementDraws(userId, gameType) {
+		await this.createIfNotExists(userId)
 		let query
 		switch (gameType) {
 			case GameTypes.TWO_PLAYER:
@@ -38,6 +49,7 @@ const Stats = {
 		return false
 	},
 	async incrementLosses(userId, gameType) {
+		await this.createIfNotExists(userId)
 		let query
 		switch (gameType) {
 			case GameTypes.TWO_PLAYER:
@@ -60,6 +72,7 @@ const Stats = {
 		return false
 	},
 	async incrementWins(userId, gameType) {
+		await this.createIfNotExists(userId)
 		/* increments the win count and then updates the level also. */
 
 		/*  Calculate level first from wins
@@ -113,6 +126,7 @@ const Stats = {
 		return null
 	},
 	async getStats(userId) {
+		await this.createIfNotExists(userId)
 		let query = `SELECT * FROM ${STATS_TABLE} WHERE user_id = ?`
 		const [rows, fields] = await pool.execute(query, [userId])
 		if (rows.length > 0) {
@@ -121,6 +135,7 @@ const Stats = {
 		return null
 	},
 	async getLeaderboard() {
+		await this.createIfNotExists(userId)
 		/* returns the top 100 players */
 		let query = `SELECT u.name, l.*, SUM(two_player_wins, three_player_wins, four_player_wins) AS total_wins FROM ${STATS_TABLE} AS l INNER JOIN ${USER_TABLE} AS u ON l.user_id = u.id ORDER BY total_wins`
 		const [rows, fields] = await pool.execute(query)
