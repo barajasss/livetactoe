@@ -13,6 +13,7 @@ const {
 const { MAX_TIMEOUT, RoomTypes, GameTypes } = require('../models/rooms')
 
 const Coin = require('../xyot4-api/models/coin.model')
+const Stats = require('../xyot4-api/models/stats.model')
 
 const {
 	checkGameWin,
@@ -128,8 +129,21 @@ async function addWonCoins(player) {
 	// no error is thrown if fails to add coins
 	// 1 for spending coins
 	const updateType = 1
-	if (player.id) {
-		await Coin.updateCoins(player.id, updateType)
+	const room = getRoomById(player.roomId)
+
+	if (room && room.players.length > 0) {
+		for (let i = 0; i < room.players.length; i++) {
+			const roomPlayer = room.players[i]
+			if (roomPlayer.id) {
+				if (roomPlayer.id === player.id) {
+					await Coin.updateCoins(player.id, updateType)
+					await Stats.incrementWins(player.id, room.gameType)
+				} else {
+					// update stats
+					await Stats.incrementLosses(player.id, room.gameType)
+				}
+			}
+		}
 	}
 }
 
@@ -143,6 +157,8 @@ async function addDrawCoins(room) {
 			const updateType = 0
 			if (player.id) {
 				await Coin.updateCoins(player.id, updateType)
+				// update stats
+				await Stats.incrementDraws(player.id, room.gameType)
 			}
 		}
 	}
@@ -168,8 +184,8 @@ exports.createPlayer = (io, socket) => async (
 	const roomType = getRoomType(gameType)
 
 	const room = addPlayer(roomType, newPlayer)
-	if(!room) return 
-	
+	if (!room) return
+
 	const { roomId, players } = room
 	newPlayer = players.find(player => player.socketId === newPlayer.socketId)
 	socket.join(roomId)
