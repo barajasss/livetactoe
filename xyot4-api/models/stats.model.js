@@ -81,17 +81,13 @@ const Stats = {
             Level 2 : need 15 wins more i.e total 25 wins.
             Level 3 : need 20 wins more i.e total 45 wins. And so on increase by 5
         */
-		let query = `SELECT two_player_wins, three_player_wins, four_player_wins FROM ${STATS_TABLE} WHERE user_id=?`
+		let query = `SELECT two_player_wins, (three_player_wins + three_player_wins + four_player_wins ) AS total_wins FROM ${STATS_TABLE} WHERE user_id=?`
 		const [rows, fields] = await pool.execute(query, [userId])
 		let level, totalWins
 
 		if (rows.length > 0) {
 			/* calculate level */
-			totalWins =
-				rows[0].two_player_wins +
-				rows[0].three_player_wins +
-				rows[0].four_player_wins +
-				1
+			totalWins = rows[0].total_wins + 1
 			function getWins(level) {
 				/* returns the minimum wins required to reach that level */
 				/* sum of arithmetic sequence (n * (2a + (n-1)d)) / 2 */
@@ -121,7 +117,7 @@ const Stats = {
 
 		/* also return the wins */
 		if (result.affectedRows > 0) {
-			return { userId, level }
+			return { userId, level, totalWins }
 		}
 		return null
 	},
@@ -135,9 +131,8 @@ const Stats = {
 		return null
 	},
 	async getLeaderboard() {
-		await this.createIfNotExists(userId)
 		/* returns the top 100 players */
-		let query = `SELECT u.name, l.*, SUM(two_player_wins, three_player_wins, four_player_wins) AS total_wins FROM ${STATS_TABLE} AS l INNER JOIN ${USER_TABLE} AS u ON l.user_id = u.id ORDER BY total_wins`
+		let query = `SELECT u.name, l.*, (two_player_wins + three_player_wins + four_player_wins) AS total_wins FROM ${STATS_TABLE} AS l INNER JOIN ${USER_TABLE} AS u ON l.user_id = u.id ORDER BY total_wins DESC`
 		const [rows, fields] = await pool.execute(query)
 		if (rows.length > 0) {
 			return rows
