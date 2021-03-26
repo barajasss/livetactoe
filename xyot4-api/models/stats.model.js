@@ -137,7 +137,7 @@ const Stats = {
 		if (rows.length > 0) {
 			return rows
 		}
-		return null
+		return []
 	},
 }
 

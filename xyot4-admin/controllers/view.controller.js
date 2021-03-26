@@ -19,6 +19,12 @@ exports.getUser = async (req, res) => {
 		backurl,
 	})
 }
+exports.deleteUser = async (req, res) => {
+	const { userId } = req.params
+	const { redirect_url: redirectUrl } = req.query
+	await User.deleteUser(userId)
+	res.redirect(`/admin/${redirectUrl}`)
+}
 exports.getLeaderboard = async (req, res) => {
 	const leaderboard = await Stats.getLeaderboard()
 	res.render('admin/leaderboard', { leaderboard })

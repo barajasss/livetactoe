@@ -1,6 +1,8 @@
 const pool = require('../connection')
 const USER_TABLE = 'users'
 const COIN_TABLE = 'users_coin'
+const STATS_TABLE = 'stats'
+const AVATARS_TABLE = 'purchased_avatars'
 
 // Login state maintained in the server.
 // status 1 - user is logged in.
@@ -118,7 +120,6 @@ const User = {
 		const state = user.state || currentUser.state
 		const avatar = user.avatar || currentUser.avatar
 
-		console.log(user)
 		const query = `
 			UPDATE ${USER_TABLE} AS u
 			INNER JOIN ${COIN_TABLE} AS t
@@ -142,6 +143,23 @@ const User = {
 			return updatedUser
 		}
 		return false
+	},
+	async deleteUser(userId) {
+		/* delete the user */
+		let query = `DELETE FROM ${USER_TABLE} where id=?`
+		await pool.execute(query, [userId])
+
+		/* delete the coin details */
+		query = `DELETE FROM ${COIN_TABLE} where user_id=?`
+		await pool.execute(query, [userId])
+
+		/* delete the stats */
+		query = `DELETE FROM ${STATS_TABLE} where user_id=?`
+		await pool.execute(query, [userId])
+
+		/* delete the purchased avatar */
+		query = `DELETE FROM ${AVATARS_TABLE} where user_id=?`
+		await pool.execute(query, [userId])
 	},
 }
 
