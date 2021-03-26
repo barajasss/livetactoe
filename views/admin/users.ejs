@@ -15,41 +15,46 @@
     <body>
         <div class="container">
             <h1 class="title">Users</h1>
-            <a class="btn btn-primary my-2" href="/admin">
-                Back To Admin Panel
-            </a>
-            <table class="table table-striped bg-light table-hover">
-                <tr>
-                    <th>Serial No</th>
-                    <th>User ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Actions</th>
-                </tr>
-                <% users.forEach((user, i)=> { %>
+            <div class="text-center">
+                <a class="btn btn-primary my-2" href="/admin">
+                    Back To Admin Panel
+                </a>
+            </div>
+            <div class="text-center" style="display: flex; justify-content: center;">
+                <table class="table table-striped table-responsive table-hover d-flex justify-content-center">
                     <tr>
-                        <td>
-                            <%= i + 1 %>.
-                        </td>
-                        <td>
-                            <%= user.id %>
-                        </td>
-                        <td>
-                            <%= user.name %>
-                        </td>
-                        <td>
-                            <%= user.user_email %>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary mr-2"
-                                onclick="window.location.href='/admin/users/<%= user.id %>?backurl=users'">Details</button>
-                            <button class="btn btn-danger" onclick="confirmDelete('<%= user.name %>')">Delete</button>
-                            <form id='delete-form' method="POST"
-                                action="/admin/users/delete/<%= user.id %>?redirect_url=users"></form>
-                        </td>
+                        <th>Serial No</th>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
                     </tr>
-                    <% }) %>
-            </table>
+                    <% users.forEach((user, i)=> { %>
+                        <tr>
+                            <td>
+                                <%= i + 1 %>.
+                            </td>
+                            <td>
+                                <%= user.id %>
+                            </td>
+                            <td>
+                                <%= user.name %>
+                            </td>
+                            <td>
+                                <%= user.user_email %>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary mr-2"
+                                    onclick="window.location.href='/admin/users/<%= user.id %>?backurl=users'">Details</button>
+                                <button class="btn btn-danger"
+                                    onclick="confirmDelete('<%= user.name %>')">Delete</button>
+                                <form id='delete-form' method="POST"
+                                    action="/admin/users/delete/<%= user.id %>?redirect_url=users"></form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </table>
+            </div>
         </div>
         <script>
             const form = document.querySelector('#delete-form')

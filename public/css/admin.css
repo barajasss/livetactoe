@@ -1,6 +1,7 @@
 .title,
 .subtitle {
 	text-align: center;
+	user-select: none;
 }
 .title {
 	margin: 20px 0;
@@ -8,7 +9,7 @@
 
 .block {
 	color: white;
-	height: 150px;
+	height: 100px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
