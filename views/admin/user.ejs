@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<% var user; if(typeof user==="undefined" ){ user={ name: 'sun' } } %>
+
+    <body>
+        <div class="container">
+            <h1 class="title">User Details</h1>
+            <a class="btn btn-success my-2" href="/admin/<%= backurl %>">
+                Go Back
+            </a>
+            <a class="btn btn-primary my-2" href="/admin">
+                Back To Admin Panel
+            </a>
+            <div>
+                <% if(Object.keys(user).length===0){ %>
+                    <h5 class="my-4" style="color: red">Could not load user!</h5>
+                    <% } %>
+                        <% Object.keys(user).forEach((key)=> { %>
+                            <div class="row bg-light my-2">
+                                <div class="col py-2">
+                                    <h4 class="text-right" style="color: blue; word-wrap: break-word;">
+                                        <%= key %>
+                                    </h4>
+                                </div>
+                                <div class="col py-2">
+                                    <h4 style="word-wrap: break-word;">
+                                        <%= user[key] %>
+                                    </h4>
+                                </div>
+                            </div>
+                            <% })%>
+            </div>
+        </div>
+    </body>
+
+</html>

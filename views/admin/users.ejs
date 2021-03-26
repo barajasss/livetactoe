@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<% var users=typeof users==="undefined" ? [] : users %>
+
+    <body>
+        <div class="container">
+            <h1 class="title">Users</h1>
+            <a class="btn btn-primary my-2" href="/admin">
+                Back To Admin Panel
+            </a>
+            <table class="table table-striped bg-light table-hover">
+                <tr>
+                    <th>Serial No</th>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+                <% users.forEach((user, i)=> { %>
+                    <tr>
+                        <td>
+                            <%= i + 1 %>.
+                        </td>
+                        <td>
+                            <%= user.id %>
+                        </td>
+                        <td>
+                            <%= user.name %>
+                        </td>
+                        <td>
+                            <%= user.user_email %>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary mr-2"
+                                onclick="window.location.href='/admin/users/<%= user.id %>?backurl=users'">Details</button>
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </table>
+        </div>
+    </body>
+
+</html>

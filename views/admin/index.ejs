@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYOT Admin</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">XYOT Admin Panel</h1>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="block bg-primary" onclick="navigate('/admin/users')">
+                    <h2 class="subtitle">Manage Users</h2>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="block bg-success" onclick="navigate('/admin/leaderboard')">
+                    <h2 class="subtitle">Check Leaderboard</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function navigate(url) {
+            window.location.href = url
+        }
+    </script>
+</body>
+
+</html>

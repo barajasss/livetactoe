@@ -20,6 +20,7 @@ const io = require('socket.io')(http, {
 const PORT = process.env.PORT || 3000
 const router = require('./routes/router')
 const apiRouter = require('./xyot4-api/api.router')
+const adminRouter = require('./xyot4-admin/admin.router')
 
 const playerController = require('./controllers/player.controller')
 const privateRoomController = require('./controllers/privateRoom.controller')
@@ -31,6 +32,7 @@ app.set('view engine', 'ejs')
 
 app.use(express.json())
 app.use(cors())
+app.use(adminRouter)
 app.use(router)
 app.use(apiRouter)
 

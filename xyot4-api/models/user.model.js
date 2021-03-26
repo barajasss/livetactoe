@@ -67,6 +67,14 @@ const User = {
 		// could not logout
 		return false
 	},
+	async getUsers() {
+		const query = `SELECT id, name, user_email FROM ${USER_TABLE}`
+		const [rows, fields] = await pool.execute(query)
+		if (rows.length > 0) {
+			return rows
+		}
+		return []
+	},
 	async getUser(userId) {
 		/* returns the user together with the total coins
 		 * accepts email or userId

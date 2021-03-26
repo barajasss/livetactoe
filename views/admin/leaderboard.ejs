@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <h1 class='title'>Leaderboard</h1>
+        <a class="btn btn-primary my-2" href="/admin">
+            Back To Admin Panel
+        </a>
+        <p class='lead'>Leaderboard displays the top 100 players provided that enough players have
+            registered.</p>
+        <table class="table table-striped bg-light table-hover">
+            <tr>
+                <th>Serial No</th>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+            <% leaderboard.forEach((user, i)=> { %>
+                <tr>
+                    <td>
+                        <%= i + 1 %>.
+                    </td>
+                    <td>
+                        <%= user.user_id %>
+                    </td>
+                    <td>
+                        <%= user.name %>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary mr-2"
+                            onclick="window.location.href='/admin/users/<%= user.user_id %>?backurl=leaderboard'">Details</button>
+                        <button class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <% }) %>
+        </table>
+    </div>
+</body>
+
+</html>
