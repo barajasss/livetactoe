@@ -3,6 +3,7 @@ const USER_TABLE = 'users'
 const COIN_TABLE = 'users_coin'
 const STATS_TABLE = 'stats'
 const AVATARS_TABLE = 'purchased_avatars'
+const { sendMail } = require('../../utils/mail')
 
 // Login state maintained in the server.
 // status 1 - user is logged in.
@@ -10,7 +11,9 @@ const AVATARS_TABLE = 'purchased_avatars'
 
 const User = {
 	generateOtp() {
-		return 12345
+		const min = 10000
+		const max = 99999
+		return Math.floor(Math.random() * (max - min + 1) + min)
 	},
 	async findByEmail(email) {
 		const query = `SELECT * FROM ${USER_TABLE} WHERE user_email = ?`
@@ -53,6 +56,12 @@ const User = {
 		const query = `UPDATE ${USER_TABLE} SET otp = ? WHERE user_email = ?`
 		const [result] = await pool.execute(query, [otp, email])
 		if (result.affectedRows > 0) {
+			/* send the otp */
+			await sendMail(
+				email,
+				'OTP for verification',
+				`Here is your OTP for logging into the XYOT app: ${otp}`
+			)
 			return true
 		}
 		return false
