@@ -6,6 +6,7 @@ const coinRouter = require('./routes/coin.router')
 const userRouter = require('./routes/user.router')
 const avatarRouter = require('./routes/avatar.router')
 const statsRouter = require('./routes/stats.router')
+const messageRouter = require('./routes/message.router')
 
 router.use((req, res, next) => {
 	// API key is required to communicate between the client and the server...
@@ -27,5 +28,6 @@ router.use('/coins', coinRouter)
 router.use('/users', userRouter)
 router.use('/avatars', avatarRouter)
 router.use('/stats', statsRouter)
+router.use('/messages', messageRouter)
 
 module.exports = router
