@@ -26,6 +26,8 @@
                 <th>Serial No</th>
                 <th>User ID</th>
                 <th>Name</th>
+                <th>Level</th>
+                <th>Wins</th>
                 <th>Actions</th>
             </tr>
             <% leaderboard.forEach((user, i)=> { %>
@@ -38,6 +40,12 @@
                     </td>
                     <td>
                         <%= user.name %>
+                    </td>
+                    <td>
+                        <%= user.level %>
+                    </td>
+                    <td>
+                        <%= user.total_wins %>
                     </td>
                     <td>
                         <button class="btn btn-primary mr-2"

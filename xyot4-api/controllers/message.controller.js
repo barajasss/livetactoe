@@ -23,14 +23,14 @@ exports.getMessage = async (req, res) => {
 
 exports.createMessage = async (req, res) => {
 	const { userId, message } = req.body
-	if (!userId || !message) {
+	if (!userId === undefined || !message) {
 		return res.status(500).json({
 			msg:
 				'properties userId and message are required in the request body',
 		})
 	}
 
-	const created = await Message.addMessage(userId, message)
+	const created = await Message.addMessage(userId, message.slice(0, 500))
 	if (created) {
 		return res.status(200).json({
 			msg: 'Message created successfully.',

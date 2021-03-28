@@ -13,9 +13,16 @@ const Message = {
 	},
 	async getMessage(messageId) {
 		const query = `SELECT m.*, u.name, u.user_email FROM ${MESSAGE_TABLE} AS m INNER JOIN ${USER_TABLE} AS u ON m.user_id = u.id WHERE m.id = ?`
-		const [rows] = await pool.execute(query, [messageId])
+		let [rows] = await pool.execute(query, [messageId])
 		if (rows.length > 0) {
 			return rows[0]
+		} else {
+			/* ANONYMOUS MESSAGES: select message without user details if message has no user associated with it */
+			const query = `SELECT * FROM ${MESSAGE_TABLE} WHERE id=?`
+			let [rows2] = await pool.execute(query, [messageId])
+			if (rows2.length > 0) {
+				return rows2[0]
+			}
 		}
 		return null
 	},
@@ -28,7 +35,6 @@ const Message = {
 		return false
 	},
 	async viewMessage(messageId) {
-		console.log(messageId)
 		const query = `UPDATE ${MESSAGE_TABLE} SET viewed = 1 WHERE id=?`
 		const [result] = await pool.execute(query, [messageId])
 		if (result.affectedRows > 0) {

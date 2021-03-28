@@ -37,7 +37,8 @@
                                 <%= message.id %>
                             </td>
                             <td>
-                                <%= message.message %>
+                                <%= message.message.length> 50 ? message.message.slice(0,50) + '...' : message.message
+                                    %>
                             </td>
                             <td>
                                 <button class="btn btn-warning" onclick="markRead(<%= message.id %>)"

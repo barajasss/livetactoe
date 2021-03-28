@@ -94,18 +94,17 @@ const User = {
 		const query = `
 			SELECT u.*, t.total_coins AS coins FROM ${USER_TABLE} AS u INNER JOIN ${COIN_TABLE} AS t
 			ON u.id = t.user_id
-			WHERE u.id = ?
+			WHERE u.id = ? OR u.user_email = ?
 		`
-		const [rows, fields] = await pool.execute(query, [userId])
+		const [rows, fields] = await pool.execute(query, [userId, userId])
 		if (rows.length > 0) {
 			const user = rows[0]
 			return user
 		} else {
 			// TRY AGAIN WITH userId as EMAIL ... try to get user from email
 			const query = `
-				SELECT u.*, t.total_coins AS coins FROM ${USER_TABLE} AS u INNER JOIN ${COIN_TABLE} AS t
-				ON u.id = t.user_id
-				WHERE u.user_email = ?
+				SELECT * FROM ${USER_TABLE} 
+				WHERE id=?
 			`
 			const [rows, fields] = await pool.execute(query, [userId])
 			if (rows.length > 0) {
