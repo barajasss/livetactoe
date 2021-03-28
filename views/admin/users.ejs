@@ -47,8 +47,8 @@
                                 <button class="btn btn-primary mr-2"
                                     onclick="window.location.href='/admin/users/<%= user.id %>?backurl=users'">Details</button>
                                 <button class="btn btn-danger"
-                                    onclick="confirmDelete('<%= user.name %>')">Delete</button>
-                                <form id='delete-form' method="POST"
+                                    onclick="confirmDelete(<%= user.id %>, '<%= user.name %>')">Delete</button>
+                                <form id='delete-form-<%= user.id %>' method="POST"
                                     action="/admin/users/delete/<%= user.id %>?redirect_url=users"></form>
                             </td>
                         </tr>
@@ -57,8 +57,8 @@
             </div>
         </div>
         <script>
-            const form = document.querySelector('#delete-form')
-            function confirmDelete(userName) {
+            function confirmDelete(userId, userName) {
+                const form = document.querySelector('#delete-form-' + userId)
                 const confirmed = confirm(`Are you sure you want to delete ${userName}?`)
                 if (confirmed) {
                     form.submit()

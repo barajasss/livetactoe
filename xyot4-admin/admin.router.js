@@ -12,12 +12,17 @@ router.post('/logout', viewController.logoutAdmin)
 router.use(viewController.protect)
 
 router.get('/', viewController.getIndex)
+router.get('/messages', viewController.getMessages)
+router.get('/messages/:messageId', viewController.getMessage)
 router.get('/users', viewController.getUsers)
 router.get('/users/:userId', viewController.getUser)
+router.get('/leaderboard', viewController.getLeaderboard)
+
+/* post requests */
 
 router.post('/users/delete/:userId', viewController.deleteUser)
-
-router.get('/leaderboard', viewController.getLeaderboard)
+router.post('/messages/view/:messageId', viewController.viewMessage)
+router.post('/messages/delete/:messageId', viewController.deleteMessage)
 
 rootRouter.use('/admin', router)
 

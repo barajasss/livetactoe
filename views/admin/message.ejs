@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 
-<% var user; if(typeof user==="undefined" ){ user={ name: 'not found' } } %>
+<% var message; if(typeof message==="undefined" ){ message={ message: 'invalid' } } %>
 
     <body>
         <div class="container">
-            <h1 class="title">User Details</h1>
+            <h1 class="title">Message Details</h1>
             <div class='text-center'>
                 <a class="btn btn-success my-2" href="/admin/<%= backurl %>">
                     Go Back
@@ -24,10 +24,10 @@
                 </a>
             </div>
             <div>
-                <% if(Object.keys(user).length===0){ %>
-                    <h5 class="my-4" style="color: red">Could not load user!</h5>
+                <% if(Object.keys(message).length===0){ %>
+                    <h5 class="my-4" style="color: red">Could not load message!</h5>
                     <% } %>
-                        <% Object.keys(user).forEach((key)=> { %>
+                        <% Object.keys(message).forEach((key)=> { %>
                             <div class="row bg-light my-2">
                                 <div class="col py-2">
                                     <h6 class="text-right" style="color: blue; word-wrap: break-word;">
@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="col py-2">
                                     <h6 style="word-wrap: break-word;">
-                                        <%= user[key] %>
+                                        <%= message[key] %>
                                     </h6>
                                 </div>
                             </div>

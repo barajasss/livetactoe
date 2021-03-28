@@ -7,6 +7,19 @@ exports.getMessages = async (req, res) => {
 		data: messages,
 	})
 }
+exports.getMessage = async (req, res) => {
+	const { messageId } = req.params
+	const message = await Message.getMessage(messageId)
+	if (message) {
+		return res.status(200).json({
+			msg: 'Message fetched successfully',
+			data: message,
+		})
+	}
+	return res.status(200).json({
+		msg: 'Could not fetch message',
+	})
+}
 
 exports.createMessage = async (req, res) => {
 	const { userId, message } = req.body
