@@ -7,7 +7,7 @@ const session = require('express-session')
 const { coinUpdater } = require('./xyot4-api/controllers/coin.controller')
 
 dotenv.config()
-
+console.log('environment logged', process.env.NODE_ENV)
 // const io = require('socket.io')(http)
 
 const io = require('socket.io')(http, {

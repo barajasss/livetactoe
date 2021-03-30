@@ -7,7 +7,7 @@ dotenv.config()
 let database = 'xyot4_xyot'
 let host = 'localhost'
 let user = 'root'
-let password = ''
+let password = 'root'
 
 if (process.env.NODE_ENV === 'production') {
 	database = process.env.DB_NAME
