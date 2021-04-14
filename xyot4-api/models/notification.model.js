@@ -6,8 +6,10 @@ const Notification = {
         const query = `SELECT token FROM ${NOTIFICATION_TABLE}`
         const [rows, fields] = await pool.execute(query)
         if (rows.length > 0) {
+            console.log("found token rows", rows)
             return rows
         }
+        console.log("no rows")
         return []
     },
     async storeToken(token) {
@@ -17,9 +19,12 @@ const Notification = {
         const query = `
 				INSERT INTO ${NOTIFICATION_TABLE}(token) VALUES(?)
 			`
-        const [result] = await pool.execute(query, [token])
-        if (result.affectedRows > 0) return token
-        return null
+        try {
+            const [result] = await pool.execute(query, [token])
+            if (result.affectedRows > 0) return token
+        } catch (err) {
+            return null
+        }
     },
 }
 

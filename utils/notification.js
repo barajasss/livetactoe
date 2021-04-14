@@ -47,16 +47,23 @@ const joinNotification = {
 
 async function pushNotification(title, body, data) {
     /* send push notification to all the users */
-    const registrationTokens = await Notification.getTokens()
+    let registrationTokens = await Notification.getTokens()
     console.log("registration tokens", registrationTokens)
-    if (registrationTokens && registrationTokens.length === 0) return
+    if (registrationTokens && registrationTokens.length !== 0) {
+        /* do proper transformation from array of objects to array of tokens */
+        registrationTokens = registrationTokens.map((token) => token.token)
+    } else {
+        return
+    }
     const message = {
-        data,
         notification: {
             title,
             body,
         },
         tokens: registrationTokens,
+    }
+    if (data) {
+        message.data = data.toString()
     }
     return new Promise((resolve, reject) => {
         admin
