@@ -11,14 +11,14 @@ admin.initializeApp({
 
 const joinNotification = {
     [RoomTypes.TWO_PLAYER]: {
-        send: pushNotification(
+        send: () => pushNotification(
             "Join 3x3 multiplayer game",
             "Someone is waiting to play multiplayer game. Join now before someone does it!",
             { gameType: GameTypes.TWO_PLAYER.TWO_PLAYER, showJoiningRoom: true }
         ),
     },
     [RoomTypes.THREE_PLAYER]: {
-        send: pushNotification(
+        send: () => pushNotification(
             "Join 4x4 multiplayer game",
             "Someone is waiting to play multiplayer game. Join now before someone does it!",
             {
@@ -28,7 +28,7 @@ const joinNotification = {
         ),
     },
     [RoomTypes.FOUR_PLAYER]: {
-        send: pushNotification(
+        send: () => pushNotification(
             "Join 5x5 multiplayer game",
             "Someone is waiting to play multiplayer game. Join now before someone does it!",
             {
@@ -66,4 +66,4 @@ function pushNotification(title, body, data) {
     })
 }
 
-export default { pushNotification, joinNotification }
+module.exports = { pushNotification, joinNotification }
