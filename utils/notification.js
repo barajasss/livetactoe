@@ -1,7 +1,7 @@
 const admin = require("firebase-admin")
 const serviceAccount = require("./serviceAccountKey.json")
 const { RoomTypes, GameTypes } = require("../models/rooms")
-const Notification = require('../xyot4-api/models/notification.model')
+const Notification = require("../xyot4-api/models/notification.model")
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -11,35 +11,41 @@ admin.initializeApp({
 
 const joinNotification = {
     [RoomTypes.TWO_PLAYER]: {
-        send: () => pushNotification(
-            "Join 3x3 multiplayer game",
-            "Someone is waiting to play multiplayer game. Join now before someone does it!",
-            { gameType: GameTypes.TWO_PLAYER.TWO_PLAYER, showJoiningRoom: true }
-        ),
+        send: () =>
+            pushNotification(
+                "Join 3x3 multiplayer game",
+                "Someone is waiting to play multiplayer game. Join now before someone does it!",
+                {
+                    gameType: GameTypes.TWO_PLAYER.TWO_PLAYER,
+                    showJoiningRoom: true,
+                }
+            ),
     },
     [RoomTypes.THREE_PLAYER]: {
-        send: () => pushNotification(
-            "Join 4x4 multiplayer game",
-            "Someone is waiting to play multiplayer game. Join now before someone does it!",
-            {
-                gameType: GameTypes.TWO_PLAYER.THREE_PLAYER,
-                showJoiningRoom: true,
-            }
-        ),
+        send: () =>
+            pushNotification(
+                "Join 4x4 multiplayer game",
+                "Someone is waiting to play multiplayer game. Join now before someone does it!",
+                {
+                    gameType: GameTypes.TWO_PLAYER.THREE_PLAYER,
+                    showJoiningRoom: true,
+                }
+            ),
     },
     [RoomTypes.FOUR_PLAYER]: {
-        send: () => pushNotification(
-            "Join 5x5 multiplayer game",
-            "Someone is waiting to play multiplayer game. Join now before someone does it!",
-            {
-                gameType: GameTypes.TWO_PLAYER.FOUR_PLAYER,
-                showJoiningRoom: true,
-            }
-        ),
+        send: () =>
+            pushNotification(
+                "Join 5x5 multiplayer game",
+                "Someone is waiting to play multiplayer game. Join now before someone does it!",
+                {
+                    gameType: GameTypes.TWO_PLAYER.FOUR_PLAYER,
+                    showJoiningRoom: true,
+                }
+            ),
     },
 }
 
-function pushNotification(title, body, data) {
+async function pushNotification(title, body, data) {
     /* send push notification to all the users */
     const registrationTokens = await Notification.getTokens()
     const message = {

@@ -4,7 +4,6 @@ const COIN_TABLE = "users_coin"
 const STATS_TABLE = "stats"
 const AVATARS_TABLE = "purchased_avatars"
 const { sendMail } = require("../../utils/mail")
-const Notification = require("./notification.model")
 
 // Login state maintained in the server.
 // status 1 - user is logged in.
@@ -27,7 +26,6 @@ const User = {
         return null
     },
     async createUser(name, email) {
-        // token stands for device token which is used to identify and send notifications. It is optional
         const query = `INSERT INTO ${USER_TABLE} (name, user_email) VALUES(?, ?)`
         const [result] = await pool.execute(query, [name, email])
         if (result.affectedRows) {
@@ -35,7 +33,7 @@ const User = {
         }
         return null
     },
-    async verifyOtp(email, otp, token) {
+    async verifyOtp(email, otp) {
         /* login the user */
         const user = await this.findByEmail(email)
         if (!user) return null
@@ -45,9 +43,6 @@ const User = {
             const query = `UPDATE ${USER_TABLE} SET status = 1, otp='' WHERE user_email = ?`
             const [result] = await pool.execute(query, [email])
             if (result.affectedRows > 0) {
-                if (token) {
-                    await Notification.storeToken(token)
-                }
                 user.status = 1
                 return user
             }

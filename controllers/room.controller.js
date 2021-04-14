@@ -95,7 +95,7 @@ exports.addPlayer = (
             }
         }
         /* send notificaiton to users to join this room */
-		await joinNotification[roomType].send()
+        joinNotification[roomType].send()
         return newRoom
     }
 }
