@@ -48,13 +48,13 @@ const joinNotification = {
 async function pushNotification(title, body, data) {
     /* send push notification to all the users */
     let registrationTokens = await Notification.getTokens()
-    console.log("registration tokens", registrationTokens)
     if (registrationTokens && registrationTokens.length !== 0) {
         /* do proper transformation from array of objects to array of tokens */
         registrationTokens = registrationTokens.map((token) => token.token)
     } else {
         return
     }
+
     const message = {
         notification: {
             title,
@@ -62,16 +62,21 @@ async function pushNotification(title, body, data) {
         },
         tokens: registrationTokens,
     }
+
+    /* convert the data property values to string */
     if (data) {
-        message.data = data.toString()
+        Object.keys(data).forEach((key) => {
+            data[key] = data[key].toString()
+        })
     }
+
     return new Promise((resolve, reject) => {
         admin
             .messaging()
             .sendMulticast(message)
             // .then((res) => res.json())
             .then((data) => {
-                console.log("success sending notificastion", data)
+                console.log("success sending notification", data)
                 resolve(data)
             })
             .catch((err) => {
