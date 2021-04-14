@@ -16,7 +16,7 @@ const joinNotification = {
                 "Join 3x3 multiplayer game",
                 "Someone is waiting to play multiplayer game. Join now before someone does it!",
                 {
-                    gameType: GameTypes.TWO_PLAYER.TWO_PLAYER,
+                    gameType: GameTypes.TWO_PLAYER,
                     showJoiningRoom: true,
                 }
             ),
@@ -27,7 +27,7 @@ const joinNotification = {
                 "Join 4x4 multiplayer game",
                 "Someone is waiting to play multiplayer game. Join now before someone does it!",
                 {
-                    gameType: GameTypes.TWO_PLAYER.THREE_PLAYER,
+                    gameType: GameTypes.THREE_PLAYER,
                     showJoiningRoom: true,
                 }
             ),
@@ -38,7 +38,7 @@ const joinNotification = {
                 "Join 5x5 multiplayer game",
                 "Someone is waiting to play multiplayer game. Join now before someone does it!",
                 {
-                    gameType: GameTypes.TWO_PLAYER.FOUR_PLAYER,
+                    gameType: GameTypes.FOUR_PLAYER,
                     showJoiningRoom: true,
                 }
             ),
@@ -48,6 +48,8 @@ const joinNotification = {
 async function pushNotification(title, body, data) {
     /* send push notification to all the users */
     const registrationTokens = await Notification.getTokens()
+    console.log("registration tokens", registrationTokens)
+    if (registrationTokens && registrationTokens.length === 0) return
     const message = {
         data,
         notification: {
