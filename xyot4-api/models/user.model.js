@@ -61,7 +61,7 @@ const User = {
             await sendMail(
                 email,
                 "OTP for verification",
-                `Here is your OTP for logging into the XYOT app: ${otp}`
+                `${otp} is your OTP for logging into the XYOT app.`
             )
             return true
         }
