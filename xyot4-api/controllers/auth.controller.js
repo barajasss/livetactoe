@@ -42,6 +42,8 @@ exports.loginAndSendOtp = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
     const { email, otp, token } = req.body
 
+    console.log("the received token for notification is", token)
+
     // determine if user exists
     const user = await User.verifyOtp(email, otp)
 

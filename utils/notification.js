@@ -1,6 +1,6 @@
 const admin = require("firebase-admin")
 const serviceAccount = require("./serviceAccountKey.json")
-const { RoomTypes, GameTypes } = require("../models/rooms")
+const { RoomTypes, GameTypes, GameModes } = require("../models/rooms")
 const Notification = require("../xyot4-api/models/notification.model")
 
 admin.initializeApp({
@@ -17,6 +17,7 @@ const joinNotification = {
                 "Someone is waiting to play multiplayer game. Join now before someone does it!",
                 {
                     gameType: GameTypes.TWO_PLAYER,
+                    gameMode: GameModes.ONLINE_PUBLIC,
                     showJoiningRoom: true,
                 }
             ),
@@ -28,6 +29,7 @@ const joinNotification = {
                 "Someone is waiting to play multiplayer game. Join now before someone does it!",
                 {
                     gameType: GameTypes.THREE_PLAYER,
+                    gameMode: GameModes.ONLINE_PUBLIC,
                     showJoiningRoom: true,
                 }
             ),
@@ -39,6 +41,7 @@ const joinNotification = {
                 "Someone is waiting to play multiplayer game. Join now before someone does it!",
                 {
                     gameType: GameTypes.FOUR_PLAYER,
+                    gameMode: GameModes.ONLINE_PUBLIC,
                     showJoiningRoom: true,
                 }
             ),
