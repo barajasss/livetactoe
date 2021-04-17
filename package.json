@@ -27,6 +27,7 @@
     "firebase-admin": "^9.6.0",
     "mailgun-js": "^0.22.0",
     "mysql2": "^2.2.5",
+    "paypal-rest-sdk": "^1.8.1",
     "socket.io": "^3.1.0",
     "uuid": "^8.3.2"
   }
