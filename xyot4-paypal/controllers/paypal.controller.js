@@ -50,23 +50,25 @@ exports.getCancel = (req, res) => {
 }
 
 exports.processPayment = (req, res) => {
+    const { userId, itemName, price } = req.body
+
     var create_payment_json = {
         intent: "sale",
         payer: {
             payment_method: "paypal",
         },
         redirect_urls: {
-            return_url: "http://localhost:3000/paypal/success",
-            cancel_url: "http://localhost:3000/paypal/cancel",
+            return_url: "http://socketserver.xyot4.com:3000/paypal/success",
+            cancel_url: "http://socketserver.xyot4.com:3000/paypal/cancel",
         },
         transactions: [
             {
                 item_list: {
                     items: [
                         {
-                            name: "item",
-                            sku: "item",
-                            price: "1.00",
+                            name: "coin",
+                            sku: "coin",
+                            price: `${price}`,
                             currency: "USD",
                             quantity: 1,
                         },
@@ -74,9 +76,9 @@ exports.processPayment = (req, res) => {
                 },
                 amount: {
                     currency: "USD",
-                    total: "1.00",
+                    total: `${price}`,
                 },
-                description: "This is the payment description.",
+                description: "Buying additional coins.",
             },
         ],
     }
