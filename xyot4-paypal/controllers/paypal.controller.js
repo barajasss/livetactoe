@@ -50,8 +50,8 @@ exports.getCancel = (req, res) => {
 }
 
 exports.processPayment = (req, res) => {
-    const { userId, itemName, price } = req.body
-
+    const { userId, itemName, price } = req.query
+    console.log("userId", userId, "price", price)
     var create_payment_json = {
         intent: "sale",
         payer: {

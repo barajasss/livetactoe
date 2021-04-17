@@ -20,7 +20,9 @@ const joinNotification = {
                     gameMode: GameModes.ONLINE_PUBLIC,
                     showJoiningRoom: true,
                 }
-            ),
+            ).catch((err) => {
+                console.log(err)
+            }),
     },
     [RoomTypes.THREE_PLAYER]: {
         send: () =>
@@ -59,9 +61,12 @@ async function pushNotification(title, body, data) {
     }
 
     const message = {
-        notification: {
-            title,
-            body,
+        android: {
+            notification: {
+                title,
+                body,
+                tag: "myuniquetag",
+            },
         },
         tokens: registrationTokens,
     }
@@ -71,6 +76,7 @@ async function pushNotification(title, body, data) {
         Object.keys(data).forEach((key) => {
             data[key] = data[key].toString()
         })
+        message.data = data
     }
 
     return new Promise((resolve, reject) => {
@@ -79,7 +85,11 @@ async function pushNotification(title, body, data) {
             .sendMulticast(message)
             // .then((res) => res.json())
             .then((data) => {
-                console.log("success sending notification", data)
+                console.log(
+                    "success sending notification",
+                    data,
+                    data.responses[0].error
+                )
                 resolve(data)
             })
             .catch((err) => {
