@@ -66,6 +66,7 @@ async function pushNotification(title, body, data) {
                 title,
                 body,
                 tag: "myuniquetag",
+                sound: "default",
             },
         },
         tokens: registrationTokens,
