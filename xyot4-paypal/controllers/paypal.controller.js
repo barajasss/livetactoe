@@ -3,9 +3,9 @@ const paypal = require("paypal-rest-sdk")
 paypal.configure({
     mode: "sandbox",
     client_id:
-        "AZRfhCvJSHgUl8ModDewJo3DBfXMLEw70tLn61_iYUowDVJp4tgtEeuAJlJYz9dPRoY_fk34Le5Zdar2",
+        "ATV08R7oSF4E7g6chN7OexIVB9bLZ8RHkqivVn9VsbJfBaNdaRiOWRfTiZy-_TdRsHnFVTlOXvt4qjA6",
     client_secret:
-        "EMEO0yeh9aQu-gWVGrWZlI26Yxlgc-sVN8G5Q09HImVq8MW59cM3YjsBb-6qwl5W-MXnSnTJfM-Ozb2R",
+        "EBl0YXYwUSFSmRogH2O3CoM7YON5bsHOwyoSSIiFoZuL5MRt56jF1p6rElT7EKZlA5B5JpduMuMf4eKQ",
 })
 
 exports.getIndex = (req, res) => {
