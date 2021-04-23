@@ -7,10 +7,20 @@
     <title>Paypal</title>
 </head>
 <body>
-    <h3>Processing... Please wait...</h3>
+    <!-- <h3>Processing... Please wait...</h3>
     <form action='/paypal/process' name='f1'>
         <input id='price' type='hidden' name='price' value=''>
         <input id='userId' type='hidden' name='userId' value=''>
+    </form> -->
+
+
+    <h1>Paypal</h1>
+    <form action='/paypal/process' name='f1'>
+        <label>Price in USD:
+            <input id='price' type='text' name='price' value='50' readonly>
+        </label>
+        <button>Pay</button>
     </form>
+
 </body>
 </html>

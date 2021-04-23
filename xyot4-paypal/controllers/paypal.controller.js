@@ -23,7 +23,7 @@ exports.getSuccess = (req, res) => {
             {
                 amount: {
                     currency: "USD",
-                    total: "1.00",
+                    total: "50.00",
                 },
             },
         ],
@@ -58,8 +58,11 @@ exports.processPayment = (req, res) => {
             payment_method: "paypal",
         },
         redirect_urls: {
-            return_url: "http://socketserver.xyot4.com:3000/paypal/success",
-            cancel_url: "http://socketserver.xyot4.com:3000/paypal/cancel",
+            // return_url: "http://socketserver.xyot4.com:3000/paypal/success",
+            // cancel_url: "http://socketserver.xyot4.com:3000/paypal/cancel",
+
+            return_url: "http://localhost:3000/paypal/success",
+            cancel_url: "http://localhost:3000/paypal/cancel",
         },
         transactions: [
             {
