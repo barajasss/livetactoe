@@ -5,6 +5,7 @@ const http = require("http").createServer(app)
 const cors = require("cors")
 const session = require("express-session")
 const { coinUpdater } = require("./xyot4-api/controllers/coin.controller")
+const axios = require("axios")
 
 dotenv.config()
 console.log("environment logged", process.env.NODE_ENV)
@@ -22,11 +23,13 @@ const PORT = process.env.PORT || 3000
 const router = require("./routes/router")
 const apiRouter = require("./xyot4-api/api.router")
 const adminRouter = require("./xyot4-admin/admin.router")
-const paypalRouter = require("./xyot4-paypal/paypal.router")
+const paypalRouter = require("./xyot4-payment-gateway/payment.router")
 
 const playerController = require("./controllers/player.controller")
 const privateRoomController = require("./controllers/privateRoom.controller")
 const messageController = require("./controllers/message.controller")
+
+axios.defaults.baseURL = "http://socketserver.xyot4.com:" + PORT
 
 app.use(express.static(__dirname + "/public"))
 app.set("views", "./views")
@@ -70,6 +73,4 @@ io.on("connection", (socket) => {
     socket.on("disconnect", playerController.disconnect(io, socket))
 })
 
-http.listen(PORT, () =>
-    console.log("xyot, live-tac-toe app listening at localhost:" + PORT)
-)
+http.listen(PORT, () => console.log("xyot, live-tac-toe app listening at localhost:" + PORT))

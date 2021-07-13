@@ -128,12 +128,13 @@ const User = {
         const city = user.city || currentUser.city
         const state = user.state || currentUser.state
         const avatar = user.avatar || currentUser.avatar
+        const noads = user.noads || currentUser.noads
 
         const query = `
 			UPDATE ${USER_TABLE} AS u
 			INNER JOIN ${COIN_TABLE} AS t
 			ON u.id = t.user_id
-			SET u.name = ?, u.user_phone = ?, u.city = ?, u.state = ?, u.avatar = ?
+			SET u.name = ?, u.user_phone = ?, u.city = ?, u.state = ?, u.avatar = ?, u.noads = ?
 			WHERE u.id = ?
 		`
 
@@ -143,6 +144,7 @@ const User = {
             city,
             state,
             avatar,
+            noads,
             id,
         ])
 
